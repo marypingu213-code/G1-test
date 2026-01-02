@@ -41,10 +41,6 @@
             max-height: 300px;
             border-radius: 10px;
             display: block;
-            /* 如果圖片還沒載入，給它一個最小高度以免版面跳動 */
-            min-height: 150px; 
-            min-width: 200px;
-            background-color: #eee; /* 破圖時顯示灰色底 */
         }
 
         /* 作答區域（灰色底） */
@@ -159,7 +155,8 @@
 
     <script>
         // ============================================
-        //  題目設定區
+        //  題目設定區：我已經幫你把截圖裡的文字打上去了
+        //  格式：{ img: '圖片檔名', text: '正確 句子 用 空白 隔開' }
         // ============================================
         const questions = [
             { img: '1.png', text: '泡泡 好像 在 抱抱' },
@@ -174,10 +171,8 @@
             { img: '10.png', text: '我 大叫 ： 你好' }
         ];
         
-        // ============================================
-        //  修改這裡：因為圖片跟 index.html 在同一層，所以改為空字串
-        // ============================================
-        const folderPath = ''; 
+        const folderPath = 'images/'; // 圖片資料夾路徑
+
         // ============================================
 
         let currentQIndex = 0;
@@ -243,7 +238,7 @@
             div.addEventListener('dragstart', () => div.classList.add('dragging'));
             div.addEventListener('dragend', () => div.classList.remove('dragging'));
             
-            // 點擊移動
+            // 點擊移動 (為了讓手機好操作，點一下也可以移動)
             div.addEventListener('click', () => {
                 if (div.parentElement === optionsArea) {
                     answerArea.appendChild(div);
@@ -257,6 +252,7 @@
 
         // 檢查答案
         function checkAnswer() {
+            // 抓取作答區裡所有的卡片文字
             const answerCards = answerArea.querySelectorAll('.word-card');
             const studentAnswer = Array.from(answerCards).map(card => card.textContent).join('');
             const correctAnswer = currentWords.join('');
@@ -265,12 +261,15 @@
                 msgEl.textContent = '🎉 答對了！你好棒！';
                 msgEl.className = 'correct-msg';
                 checkBtn.style.display = 'none';
-                nextBtn.style.display = 'block'; 
+                nextBtn.style.display = 'block'; // 顯示下一題按鈕
                 
+                // 鎖定卡片不讓移動
                 answerCards.forEach(c => c.draggable = false);
             } else {
                 msgEl.textContent = '❌ 再試試看，順序好像不對喔！';
                 msgEl.className = 'wrong-msg';
+                // 這裡可以選擇要不要把卡片退回，或讓學生繼續調整
+                // 目前設定為讓學生繼續在作答區調整
             }
         }
 
@@ -295,14 +294,17 @@
             });
         });
 
+        // 計算拖曳時插入位置的演算法
         function getDragAfterElement(container, x, y) {
             const draggableElements = [...container.querySelectorAll('.word-card:not(.dragging)')];
 
             return draggableElements.reduce((closest, child) => {
                 const box = child.getBoundingClientRect();
+                // 這裡同時考慮 X 和 Y，因為卡片會換行
                 const offsetX = x - box.left - box.width / 2;
                 const offsetY = y - box.top - box.height / 2;
                 
+                // 簡單判定：這裡主要抓水平距離最近的
                 if (offsetX < 0 && offsetX > closest.offset) {
                     return { offset: offsetX, element: child };
                 } else {
@@ -311,6 +313,7 @@
             }, { offset: Number.NEGATIVE_INFINITY }).element;
         }
 
+        // 洗牌函式
         function shuffleArray(array) {
             for (let i = array.length - 1; i > 0; i--) {
                 const j = Math.floor(Math.random() * (i + 1));
