@@ -41,13 +41,12 @@
             max-height: 300px;
             border-radius: 10px;
             display: block;
-            /* 如果圖片還沒載入，給它一個最小高度以免版面跳動 */
             min-height: 150px; 
             min-width: 200px;
-            background-color: #eee; /* 破圖時顯示灰色底 */
+            background-color: #eee;
         }
 
-        /* 作答區域（灰色底） */
+        /* 作答區域 */
         #answer-area {
             width: 90%;
             max-width: 800px;
@@ -65,7 +64,7 @@
             transition: background-color 0.3s;
         }
 
-        /* 題目選項區域（打亂的詞） */
+        /* 題目選項區域 */
         #options-area {
             width: 90%;
             max-width: 800px;
@@ -107,6 +106,7 @@
             gap: 15px;
             flex-direction: column;
             align-items: center;
+            width: 100%;
         }
 
         button {
@@ -123,12 +123,25 @@
         button:active { transform: translateY(4px); box-shadow: none; }
 
         #check-btn { background-color: #4CAF50; color: white; }
-        #next-btn { background-color: #2196F3; color: white; display: none; } /* 預設隱藏下一題 */
+        #next-btn { background-color: #2196F3; color: white; display: none; }
+        
+        /* 結束時的按鈕樣式 */
+        .final-btns {
+            display: none; /* 預設隱藏 */
+            gap: 20px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        
+        .btn-lobby { background-color: #795548; color: white; } /* 咖啡色回到大廳 */
+        .btn-game2 { background-color: #9c27b0; color: white; } /* 紫色下一關 */
 
         #message {
             font-size: 1.5rem;
             height: 30px;
             font-weight: bold;
+            text-align: center;
+            margin-bottom: 10px;
         }
         .correct-msg { color: green; }
         .wrong-msg { color: red; }
@@ -144,17 +157,19 @@
         <img id="question-image" src="" alt="題目圖片">
     </div>
 
-    <div id="answer-area" class="drop-zone">
-        </div>
-
-    <div id="options-area" class="drop-zone">
-        </div>
+    <div id="answer-area" class="drop-zone"></div>
+    <div id="options-area" class="drop-zone"></div>
 
     <div id="message"></div>
 
     <div class="controls">
         <button id="check-btn" onclick="checkAnswer()">檢查答案</button>
         <button id="next-btn" onclick="nextQuestion()">下一題 ➔</button>
+
+        <div id="final-buttons" class="final-btns">
+            <button class="btn-lobby" onclick="goToLobby()">🏠 回到大廳</button>
+            <button class="btn-game2" onclick="goToGame2()">🎮 前往下一關</button>
+        </div>
     </div>
 
     <script>
@@ -174,9 +189,6 @@
             { img: '10.png', text: '我 大叫 ： 你好' }
         ];
         
-        // ============================================
-        //  修改這裡：因為圖片跟 index.html 在同一層，所以改為空字串
-        // ============================================
         const folderPath = ''; 
         // ============================================
 
@@ -190,6 +202,7 @@
         const nextBtn = document.getElementById('next-btn');
         const checkBtn = document.getElementById('check-btn');
         const progressEl = document.getElementById('progress');
+        const finalBtnsDiv = document.getElementById('final-buttons'); // 抓取結束按鈕區
 
         // 初始化第一題
         loadQuestion(currentQIndex);
@@ -206,9 +219,7 @@
             
             // 如果題目做完了
             if (index >= questions.length) {
-                imgEl.style.display = 'none';
-                progressEl.textContent = "恭喜！全部題目都完成了！";
-                checkBtn.style.display = 'none';
+                gameFinished(); // 呼叫結束函式
                 return;
             }
 
@@ -218,19 +229,44 @@
             imgEl.style.display = 'block';
             progressEl.textContent = `第 ${index + 1} 題 / 共 ${questions.length} 題`;
 
-            // 處理文字：用空白分割成陣列
-            // filter(Boolean) 是為了防止有多餘空白造成空字串
+            // 處理文字
             currentWords = q.text.split(' ').filter(Boolean); 
 
-            // 複製一份並打亂
             let shuffledWords = [...currentWords];
             shuffleArray(shuffledWords);
 
-            // 建立詞語卡片
             shuffledWords.forEach(word => {
                 const card = createWordCard(word);
                 optionsArea.appendChild(card);
             });
+        }
+
+        // 遊戲結束時執行的動作
+        function gameFinished() {
+            imgEl.style.display = 'none'; // 隱藏圖片
+            answerArea.style.display = 'none'; // 隱藏作答區
+            optionsArea.style.display = 'none'; // 隱藏選項區
+            
+            progressEl.innerHTML = "🎉 <br>恭喜！全部題目都完成了！";
+            progressEl.style.color = "#d81b60";
+            progressEl.style.fontSize = "1.5rem";
+            
+            checkBtn.style.display = 'none';
+            nextBtn.style.display = 'none';
+            
+            // 顯示最後的跳轉按鈕
+            finalBtnsDiv.style.display = 'flex';
+        }
+
+        // 跳轉功能的函式
+        function goToLobby() {
+            // ../ 代表回到上一層 (根目錄)
+            window.location.href = '../index.html';
+        }
+
+        function goToGame2() {
+            // ../game2/ 代表回到上一層，再進入 game2 資料夾
+            window.location.href = '../game2/index.html';
         }
 
         function createWordCard(text) {
@@ -239,11 +275,9 @@
             div.textContent = text;
             div.draggable = true;
 
-            // 拖曳事件
             div.addEventListener('dragstart', () => div.classList.add('dragging'));
             div.addEventListener('dragend', () => div.classList.remove('dragging'));
             
-            // 點擊移動
             div.addEventListener('click', () => {
                 if (div.parentElement === optionsArea) {
                     answerArea.appendChild(div);
@@ -255,7 +289,6 @@
             return div;
         }
 
-        // 檢查答案
         function checkAnswer() {
             const answerCards = answerArea.querySelectorAll('.word-card');
             const studentAnswer = Array.from(answerCards).map(card => card.textContent).join('');
