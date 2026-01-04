@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>改錯字測驗</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            background-color: #f0f2f5;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .container {
+            background: white;
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            width: 90%;
+            max-width: 500px;
+            text-align: center;
+        }
+        .score-board {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 1rem;
+            color: #666;
+            font-weight: bold;
+        }
+        .question {
+            font-size: 1.5rem;
+            margin: 2rem 0;
+            padding: 1rem;
+            background: #e9ecef;
+            border-radius: 8px;
+        }
+        .options {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+        }
+        .btn {
+            flex: 1;
+            padding: 15px;
+            font-size: 1.5rem;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            background: white;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .btn:hover:not(:disabled) {
+            border-color: #4a90e2;
+            color: #4a90e2;
+        }
+        .btn.correct {
+            background-color: #2ecc71;
+            border-color: #2ecc71;
+            color: white;
+        }
+        .btn.wrong {
+            background-color: #e74c3c;
+            border-color: #e74c3c;
+            color: white;
+        }
+        .next-btn {
+            margin-top: 20px;
+            padding: 10px 25px;
+            font-size: 1rem;
+            background-color: #333;
+            color: white;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            display: none; /* 預設隱藏 */
+        }
+        .result-screen {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div id="game-screen">
+        <div class="score-board">
+            <span id="score">得分: 0</span>
+            <span id="progress">題數: 1/5</span>
+        </div>
+        
+        <div class="question" id="question-text"></div>
+        
+        <div class="options" id="options-area"></div>
+        
+        <button class="next-btn" id="next-btn" onclick="nextQuestion()">下一題 ➜</button>
+    </div>
+
+    <div id="result-screen" class="result-screen">
+        <h2>測驗結束</h2>
+        <h1 id="final-score"></h1>
+        <button class="btn" style="margin-top:20px; border-color:#333;" onclick="initGame()">再玩一次</button>
+    </div>
+</div>
+
+<script>
+    // 題目資料：不含解釋，僅有題目、選項、答案
+    const questions = [
+        { text: "我和爸爸去方子裡。", options: ["防", "房", "坊"], answer: "房" },
+        { text: "為十麼你不好好上課。", options: ["什", "神", "加"], answer: "什" },
+        { text: "青幫我把課本拿出來。", options: ["請", "情", "精"], answer: "請" },
+        { text: "也是一個可愛的小朋友。", options: ["拖", "尾", "他"], answer: "他" },
+        { text: "都是一隻小兔子。", options: ["部", "陳", "那"], answer: "那" },
+        { text: "大加要一起去玩。", options: ["豕", "家", "宅"], answer: "家" },
+        { text: "你真是太友福氣了。", options: ["有", "月", "朋"], answer: "有" },
+        { text: "兔子不喜歡被泡著。", options: ["包", "抱", "泡"], answer: "抱" }
+    ];
+
+    let currentQ = [];
+    let index = 0;
+    let score = 0;
+
+    function initGame() {
+        // 隨機選 5 題
+        currentQ = [...questions].sort(() => 0.5 - Math.random()).slice(0, 5);
+        index = 0;
+        score = 0;
+        document.getElementById('game-screen').style.display = 'block';
+        document.getElementById('result-screen').style.display = 'none';
+        updateUI();
+        loadQuestion();
+    }
+
+    function loadQuestion() {
+        const q = currentQ[index];
+        document.getElementById('question-text').innerText = q.text;
+        const optsDiv = document.getElementById('options-area');
+        optsDiv.innerHTML = '';
+        document.getElementById('next-btn').style.display = 'none';
+
+        q.options.forEach(opt => {
+            const btn = document.createElement('button');
+            btn.className = 'btn';
+            btn.innerText = opt;
+            btn.onclick = () => check(btn, opt, q.answer);
+            optsDiv.appendChild(btn);
+        });
+    }
+
+    function check(btn, selection, correct) {
+        const btns = document.querySelectorAll('.options .btn');
+        btns.forEach(b => b.disabled = true); // 鎖定按鈕
+
+        if (selection === correct) {
+            btn.classList.add('correct');
+            score += 20;
+        } else {
+            btn.classList.add('wrong');
+            // 顯示正確答案
+            btns.forEach(b => {
+                if (b.innerText === correct) b.classList.add('correct');
+            });
+        }
+        
+        updateUI();
+        document.getElementById('next-btn').style.display = 'inline-block';
+    }
+
+    function nextQuestion() {
+        index++;
+        if (index < currentQ.length) {
+            loadQuestion();
+            updateUI();
+        } else {
+            showResult();
+        }
+    }
+
+    function updateUI() {
+        document.getElementById('score').innerText = `得分: ${score}`;
+        document.getElementById('progress').innerText = `題數: ${Math.min(index + 1, currentQ.length)}/${currentQ.length}`;
+    }
+
+    function showResult() {
+        document.getElementById('game-screen').style.display = 'none';
+        document.getElementById('result-screen').style.display = 'block';
+        document.getElementById('final-score').innerText = `${score} 分`;
+    }
+
+    initGame();
+</script>
+
+</body>
+</html>
