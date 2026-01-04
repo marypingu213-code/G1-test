@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>遊戲大廳</title>
+    <style>
+        body {
+            font-family: "微軟正黑體", sans-serif;
+            background-color: #fff9c4; /* 鵝黃色背景 */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        h1 {
+            color: #f57f17;
+            font-size: 3rem;
+            margin-bottom: 40px;
+        }
+
+        .menu-container {
+            display: flex;
+            gap: 30px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .game-link {
+            text-decoration: none;
+            color: white;
+            background-color: #4CAF50; /* 綠色按鈕 */
+            padding: 30px 50px;
+            border-radius: 20px;
+            font-size: 1.5rem;
+            font-weight: bold;
+            box-shadow: 0 5px 0 #2E7D32;
+            transition: transform 0.1s, background-color 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 200px;
+        }
+
+        .game-link:active {
+            transform: translateY(5px);
+            box-shadow: none;
+        }
+
+        .game-link.purple {
+            background-color: #9c27b0;
+            box-shadow: 0 5px 0 #7b1fa2;
+        }
+
+        .game-link:hover {
+            filter: brightness(1.1);
+        }
+    </style>
+</head>
+<body>
+
+    <h1>🎮 歡迎來到遊戲樂園</h1>
+
+    <div class="menu-container">
+        <a href="game2/index.html" class="game-link">
+            第一關：句子重組
+        </a>
+
+        <a href="game1/index.html" class="game-link purple">
+            第二關：找錯字
+        </a>
+    </div>
+
+</body>
+</html>
