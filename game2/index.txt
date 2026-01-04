@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>看圖句子重組</title>
+    <style>
+        body {
+            font-family: "微軟正黑體", sans-serif;
+            background-color: #fce4ec; /* 溫馨的背景色 */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            margin: 0;
+            min-height: 100vh;
+        }
+
+        h1 { color: #880e4f; margin-bottom: 10px; }
+
+        /* 遊戲進度條 */
+        #progress {
+            margin-bottom: 15px;
+            font-size: 1.2rem;
+            color: #555;
+            font-weight: bold;
+        }
+
+        /* 圖片顯示區 */
+        .image-container {
+            background: white;
+            padding: 10px;
+            border-radius: 15px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+            max-width: 90%;
+        }
+
+        #question-image {
+            max-width: 100%;
+            max-height: 300px;
+            border-radius: 10px;
+            display: block;
+            /* 如果圖片還沒載入，給它一個最小高度以免版面跳動 */
+            min-height: 150px; 
+            min-width: 200px;
+            background-color: #eee; /* 破圖時顯示灰色底 */
+        }
+
+        /* 作答區域（灰色底） */
+        #answer-area {
+            width: 90%;
+            max-width: 800px;
+            min-height: 80px;
+            background-color: #e3f2fd;
+            border: 2px dashed #2196F3;
+            border-radius: 10px;
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: center;
+            padding: 15px;
+            margin-bottom: 20px;
+            gap: 10px;
+            transition: background-color 0.3s;
+        }
+
+        /* 題目選項區域（打亂的詞） */
+        #options-area {
+            width: 90%;
+            max-width: 800px;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 30px;
+        }
+
+        /* 詞語卡片樣式 */
+        .word-card {
+            background-color: white;
+            border: 2px solid #ff4081;
+            color: #333;
+            padding: 10px 20px;
+            border-radius: 50px;
+            font-size: 1.5rem;
+            cursor: grab;
+            user-select: none;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            transition: transform 0.2s, background-color 0.2s;
+        }
+
+        .word-card:hover {
+            transform: scale(1.05);
+            background-color: #fff0f5;
+        }
+
+        .word-card.dragging {
+            opacity: 0.5;
+            cursor: grabbing;
+            background-color: #ccc;
+        }
+
+        /* 按鈕與訊息 */
+        .controls {
+            display: flex;
+            gap: 15px;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        button {
+            padding: 12px 40px;
+            font-size: 1.3rem;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            font-weight: bold;
+            box-shadow: 0 4px 0 rgba(0,0,0,0.2);
+            transition: transform 0.1s;
+        }
+        
+        button:active { transform: translateY(4px); box-shadow: none; }
+
+        #check-btn { background-color: #4CAF50; color: white; }
+        #next-btn { background-color: #2196F3; color: white; display: none; } /* 預設隱藏下一題 */
+
+        #message {
+            font-size: 1.5rem;
+            height: 30px;
+            font-weight: bold;
+        }
+        .correct-msg { color: green; }
+        .wrong-msg { color: red; }
+
+    </style>
+</head>
+<body>
+
+    <h1>看圖重組句子</h1>
+    <div id="progress">準備開始...</div>
+
+    <div class="image-container">
+        <img id="question-image" src="" alt="題目圖片">
+    </div>
+
+    <div id="answer-area" class="drop-zone">
+        </div>
+
+    <div id="options-area" class="drop-zone">
+        </div>
+
+    <div id="message"></div>
+
+    <div class="controls">
+        <button id="check-btn" onclick="checkAnswer()">檢查答案</button>
+        <button id="next-btn" onclick="nextQuestion()">下一題 ➔</button>
+    </div>
+
+    <script>
+        // ============================================
+        //  題目設定區
+        // ============================================
+        const questions = [
+            { img: '1.png', text: '泡泡 好像 在 抱抱' },
+            { img: '2.png', text: '房子裡 有 滿滿的 幸福' },
+            { img: '3.png', text: '我 把 紅紅的 滿 貼在 家裡' },
+            { img: '4.png', text: '魚缸裡 都是 悄悄話' },
+            { img: '5.png', text: '魚缸裡 開滿 大 紅花' },
+            { img: '6.png', text: '我們 住的 是 地球' },
+            { img: '7.png', text: '外星人 你 住在 哪個 星球?' },
+            { img: '8.png', text: '我 要 和 他 做 朋友' },
+            { img: '9.png', text: '在 青青的 山上' },
+            { img: '10.png', text: '我 大叫 ： 你好' }
+        ];
+        
+        // ============================================
+        //  修改這裡：因為圖片跟 index.html 在同一層，所以改為空字串
+        // ============================================
+        const folderPath = ''; 
+        // ============================================
+
+        let currentQIndex = 0;
+        let currentWords = [];
+        
+        const imgEl = document.getElementById('question-image');
+        const answerArea = document.getElementById('answer-area');
+        const optionsArea = document.getElementById('options-area');
+        const msgEl = document.getElementById('message');
+        const nextBtn = document.getElementById('next-btn');
+        const checkBtn = document.getElementById('check-btn');
+        const progressEl = document.getElementById('progress');
+
+        // 初始化第一題
+        loadQuestion(currentQIndex);
+
+        function loadQuestion(index) {
+            // 重置介面
+            answerArea.innerHTML = '';
+            optionsArea.innerHTML = '';
+            msgEl.textContent = '';
+            msgEl.className = '';
+            nextBtn.style.display = 'none';
+            checkBtn.style.display = 'block';
+            checkBtn.disabled = false;
+            
+            // 如果題目做完了
+            if (index >= questions.length) {
+                imgEl.style.display = 'none';
+                progressEl.textContent = "恭喜！全部題目都完成了！";
+                checkBtn.style.display = 'none';
+                return;
+            }
+
+            // 載入圖片與進度
+            const q = questions[index];
+            imgEl.src = folderPath + q.img;
+            imgEl.style.display = 'block';
+            progressEl.textContent = `第 ${index + 1} 題 / 共 ${questions.length} 題`;
+
+            // 處理文字：用空白分割成陣列
+            // filter(Boolean) 是為了防止有多餘空白造成空字串
+            currentWords = q.text.split(' ').filter(Boolean); 
+
+            // 複製一份並打亂
+            let shuffledWords = [...currentWords];
+            shuffleArray(shuffledWords);
+
+            // 建立詞語卡片
+            shuffledWords.forEach(word => {
+                const card = createWordCard(word);
+                optionsArea.appendChild(card);
+            });
+        }
+
+        function createWordCard(text) {
+            const div = document.createElement('div');
+            div.className = 'word-card';
+            div.textContent = text;
+            div.draggable = true;
+
+            // 拖曳事件
+            div.addEventListener('dragstart', () => div.classList.add('dragging'));
+            div.addEventListener('dragend', () => div.classList.remove('dragging'));
+            
+            // 點擊移動
+            div.addEventListener('click', () => {
+                if (div.parentElement === optionsArea) {
+                    answerArea.appendChild(div);
+                } else {
+                    optionsArea.appendChild(div);
+                }
+            });
+
+            return div;
+        }
+
+        // 檢查答案
+        function checkAnswer() {
+            const answerCards = answerArea.querySelectorAll('.word-card');
+            const studentAnswer = Array.from(answerCards).map(card => card.textContent).join('');
+            const correctAnswer = currentWords.join('');
+
+            if (studentAnswer === correctAnswer) {
+                msgEl.textContent = '🎉 答對了！你好棒！';
+                msgEl.className = 'correct-msg';
+                checkBtn.style.display = 'none';
+                nextBtn.style.display = 'block'; 
+                
+                answerCards.forEach(c => c.draggable = false);
+            } else {
+                msgEl.textContent = '❌ 再試試看，順序好像不對喔！';
+                msgEl.className = 'wrong-msg';
+            }
+        }
+
+        function nextQuestion() {
+            currentQIndex++;
+            loadQuestion(currentQIndex);
+        }
+
+        // --- 拖放功能核心邏輯 ---
+        const dropZones = [answerArea, optionsArea];
+
+        dropZones.forEach(zone => {
+            zone.addEventListener('dragover', e => {
+                e.preventDefault();
+                const afterElement = getDragAfterElement(zone, e.clientX, e.clientY);
+                const draggable = document.querySelector('.dragging');
+                if (afterElement == null) {
+                    zone.appendChild(draggable);
+                } else {
+                    zone.insertBefore(draggable, afterElement);
+                }
+            });
+        });
+
+        function getDragAfterElement(container, x, y) {
+            const draggableElements = [...container.querySelectorAll('.word-card:not(.dragging)')];
+
+            return draggableElements.reduce((closest, child) => {
+                const box = child.getBoundingClientRect();
+                const offsetX = x - box.left - box.width / 2;
+                const offsetY = y - box.top - box.height / 2;
+                
+                if (offsetX < 0 && offsetX > closest.offset) {
+                    return { offset: offsetX, element: child };
+                } else {
+                    return closest;
+                }
+            }, { offset: Number.NEGATIVE_INFINITY }).element;
+        }
+
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+        }
+
+    </script>
+</body>
+</html>
