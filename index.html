@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>遊戲大廳</title>
+    <title>國語文遊戲樂園</title>
     <style>
         body {
             font-family: "微軟正黑體", sans-serif;
@@ -12,67 +12,112 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            height: 100vh;
+            min-height: 100vh;
             margin: 0;
+            padding: 20px;
         }
 
         h1 {
             color: #f57f17;
             font-size: 3rem;
             margin-bottom: 40px;
+            text-align: center;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
         }
 
         .menu-container {
             display: flex;
-            gap: 30px;
+            gap: 20px;
             flex-wrap: wrap;
             justify-content: center;
+            max-width: 800px;
         }
 
         .game-link {
             text-decoration: none;
             color: white;
-            background-color: #4CAF50; /* 綠色按鈕 */
-            padding: 30px 50px;
+            padding: 30px 40px;
             border-radius: 20px;
             font-size: 1.5rem;
             font-weight: bold;
-            box-shadow: 0 5px 0 #2E7D32;
-            transition: transform 0.1s, background-color 0.3s;
             display: flex;
             align-items: center;
             justify-content: center;
-            min-width: 200px;
+            min-width: 220px;
+            transition: transform 0.1s, filter 0.3s;
+            text-align: center;
         }
 
         .game-link:active {
             transform: translateY(5px);
-            box-shadow: none;
-        }
-
-        .game-link.purple {
-            background-color: #9c27b0;
-            box-shadow: 0 5px 0 #7b1fa2;
+            box-shadow: none !important; /* 按下時消除陰影 */
         }
 
         .game-link:hover {
-            filter: brightness(1.1);
+            filter: brightness(1.1); /* 滑鼠移過去變亮 */
+            transform: translateY(-5px); /* 微微浮起 */
         }
+
+        /* --- 各關卡的顏色設定 --- */
+        
+        /* 第一關：綠色 */
+        .level-1 {
+            background-color: #4CAF50;
+            box-shadow: 0 6px 0 #2E7D32;
+        }
+
+        /* 第二關：紫色 */
+        .level-2 {
+            background-color: #9c27b0;
+            box-shadow: 0 6px 0 #7b1fa2;
+        }
+
+        /* 第三關：橘色 */
+        .level-3 {
+            background-color: #ff9800;
+            box-shadow: 0 6px 0 #e65100;
+        }
+
+        /* 第四關：藍色 */
+        .level-4 {
+            background-color: #2196F3;
+            box-shadow: 0 6px 0 #1565c0;
+        }
+
+        /* 頁尾小字 */
+        footer {
+            margin-top: 50px;
+            color: #888;
+            font-size: 0.9rem;
+        }
+
     </style>
 </head>
 <body>
 
-    <h1>🎮 歡迎來到遊戲樂園</h1>
+    <h1>🏰 國語文遊戲樂園</h1>
 
     <div class="menu-container">
-        <a href="game2/index.html" class="game-link">
-            第一關：句子重組
+        <a href="game1/index.html" class="game-link level-1">
+            第一關<br>看圖重組句子
         </a>
 
-        <a href="game1/index.html" class="game-link purple">
-            第二關：找錯字
+        <a href="game2/index.html" class="game-link level-2">
+            第二關<br>新遊戲 (未命名)
+        </a>
+
+        <a href="game3/index.html" class="game-link level-3">
+            第三關<br>語詞配對
+        </a>
+
+        <a href="game4/index.html" class="game-link level-4">
+            第四關<br>選出正確部首
         </a>
     </div>
+
+    <footer>
+        加油！每一關都挑戰看看吧！
+    </footer>
 
 </body>
 </html>
