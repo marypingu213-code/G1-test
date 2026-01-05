@@ -34,9 +34,8 @@
             padding: 10px;
             border-radius: 15px;
             box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-            margin-bottom: 10px; /* 縮小間距給喇叭按鈕 */
+            margin-bottom: 10px;
             max-width: 90%;
-            position: relative; /* 為了定位喇叭按鈕 */
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -189,6 +188,7 @@
     </div>
 
     <script>
+        // 設定區
         const questions = [
             { img: '1.png', text: '泡泡 好像 在 抱抱' },
             { img: '2.png', text: '房子裡 有 滿滿的 幸福' },
@@ -215,6 +215,7 @@
         const progressEl = document.getElementById('progress');
         const finalBtnsDiv = document.getElementById('final-buttons');
 
+        // 啟動遊戲
         loadQuestion(currentQIndex);
 
         function loadQuestion(index) {
@@ -247,32 +248,19 @@
             });
         }
 
-        // ============================================
-        //  🔊 這裡就是控制說話的程式
-        // ============================================
+        // 🔊 語音功能
         function readSentence() {
-            // 1. 取得現在這題的正確句子
-            // 把中間的空白去掉，讀起來比較順 (例如 "泡泡 好像" -> "泡泡好像")
             let textToRead = questions[currentQIndex].text.replace(/\s/g, '');
-
-            // 2. 建立語音物件
             let utterance = new SpeechSynthesisUtterance(textToRead);
-            
-            // 3. 設定語言為台灣繁體中文
             utterance.lang = 'zh-TW'; 
-            
-            // 4. 設定速度 (1是正常，0.8比較慢適合學生)
             utterance.rate = 0.8; 
-
-            // 5. 播放
-            window.speechSynthesis.cancel(); // 如果還在講上一句，先卡掉
+            window.speechSynthesis.cancel(); 
             window.speechSynthesis.speak(utterance);
         }
-        // ============================================
 
         function gameFinished() {
             imgEl.style.display = 'none';
-            document.querySelector('.speak-btn').style.display = 'none'; // 隱藏朗讀按鈕
+            document.querySelector('.speak-btn').style.display = 'none';
             answerArea.style.display = 'none';
             optionsArea.style.display = 'none';
             progressEl.innerHTML = "🎉 <br>恭喜！全部題目都完成了！";
@@ -325,4 +313,28 @@
             zone.addEventListener('dragover', e => {
                 e.preventDefault();
                 const afterElement = getDragAfterElement(zone, e.clientX, e.clientY);
-                const draggable = document.querySelector('.dragging
+                const draggable = document.querySelector('.dragging');
+                if (afterElement == null) { zone.appendChild(draggable); } 
+                else { zone.insertBefore(draggable, afterElement); }
+            });
+        });
+
+        function getDragAfterElement(container, x, y) {
+            const draggableElements = [...container.querySelectorAll('.word-card:not(.dragging)')];
+            return draggableElements.reduce((closest, child) => {
+                const box = child.getBoundingClientRect();
+                const offsetX = x - box.left - box.width / 2;
+                if (offsetX < 0 && offsetX > closest.offset) { return { offset: offsetX, element: child }; } 
+                else { return closest; }
+            }, { offset: Number.NEGATIVE_INFINITY }).element;
+        }
+
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+        }
+    </script>
+</body>
+</html>
