@@ -4,10 +4,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>看圖句子重組</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@500;700&display=swap" rel="stylesheet">
+    
     <style>
         body {
-            font-family: "微軟正黑體", sans-serif;
-            background-color: #fce4ec; /* 溫馨的背景色 */
+            font-family: "Zen Maru Gothic", "微軟正黑體", sans-serif;
+            background-color: #fce4ec;
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -18,7 +22,6 @@
 
         h1 { color: #880e4f; margin-bottom: 10px; }
 
-        /* 遊戲進度條 */
         #progress {
             margin-bottom: 15px;
             font-size: 1.2rem;
@@ -26,14 +29,17 @@
             font-weight: bold;
         }
 
-        /* 圖片顯示區 */
         .image-container {
             background: white;
             padding: 10px;
             border-radius: 15px;
             box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-            margin-bottom: 20px;
+            margin-bottom: 10px; /* 縮小間距給喇叭按鈕 */
             max-width: 90%;
+            position: relative; /* 為了定位喇叭按鈕 */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
         }
 
         #question-image {
@@ -46,7 +52,27 @@
             background-color: #eee;
         }
 
-        /* 作答區域 */
+        /* 🔊 朗讀按鈕樣式 */
+        .speak-btn {
+            background-color: #FF9800;
+            color: white;
+            border: none;
+            border-radius: 50px;
+            padding: 8px 20px;
+            margin-top: 10px;
+            font-size: 1rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            font-family: "Zen Maru Gothic", sans-serif;
+            transition: transform 0.1s;
+        }
+        
+        .speak-btn:active { transform: scale(0.95); }
+        .speak-btn:hover { background-color: #f57c00; }
+
         #answer-area {
             width: 90%;
             max-width: 800px;
@@ -61,10 +87,8 @@
             padding: 15px;
             margin-bottom: 20px;
             gap: 10px;
-            transition: background-color 0.3s;
         }
 
-        /* 題目選項區域 */
         #options-area {
             width: 90%;
             max-width: 800px;
@@ -75,7 +99,6 @@
             margin-bottom: 30px;
         }
 
-        /* 詞語卡片樣式 */
         .word-card {
             background-color: white;
             border: 2px solid #ff4081;
@@ -86,12 +109,6 @@
             cursor: grab;
             user-select: none;
             box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-            transition: transform 0.2s, background-color 0.2s;
-        }
-
-        .word-card:hover {
-            transform: scale(1.05);
-            background-color: #fff0f5;
         }
 
         .word-card.dragging {
@@ -100,7 +117,6 @@
             background-color: #ccc;
         }
 
-        /* 按鈕與訊息 */
         .controls {
             display: flex;
             gap: 15px;
@@ -117,24 +133,21 @@
             cursor: pointer;
             font-weight: bold;
             box-shadow: 0 4px 0 rgba(0,0,0,0.2);
-            transition: transform 0.1s;
+            font-family: "Zen Maru Gothic", sans-serif;
         }
-        
-        button:active { transform: translateY(4px); box-shadow: none; }
 
         #check-btn { background-color: #4CAF50; color: white; }
         #next-btn { background-color: #2196F3; color: white; display: none; }
         
-        /* 結束時的按鈕樣式 */
         .final-btns {
-            display: none; /* 預設隱藏 */
+            display: none;
             gap: 20px;
             flex-wrap: wrap;
             justify-content: center;
         }
         
-        .btn-lobby { background-color: #795548; color: white; } /* 咖啡色回到大廳 */
-        .btn-game2 { background-color: #9c27b0; color: white; } /* 紫色下一關 */
+        .btn-lobby { background-color: #795548; color: white; }
+        .btn-game2 { background-color: #9c27b0; color: white; }
 
         #message {
             font-size: 1.5rem;
@@ -155,6 +168,9 @@
 
     <div class="image-container">
         <img id="question-image" src="" alt="題目圖片">
+        <button class="speak-btn" onclick="readSentence()">
+            🔊 唸給我聽
+        </button>
     </div>
 
     <div id="answer-area" class="drop-zone"></div>
@@ -168,14 +184,11 @@
 
         <div id="final-buttons" class="final-btns">
             <button class="btn-lobby" onclick="goToLobby()">🏠 回到大廳</button>
-            <button class="btn-game1" onclick="goToGame1()">🎮 前往下一關</button>
+            <button class="btn-game2" onclick="goToGame2()">🎮 前往下一關</button>
         </div>
     </div>
 
     <script>
-        // ============================================
-        //  題目設定區
-        // ============================================
         const questions = [
             { img: '1.png', text: '泡泡 好像 在 抱抱' },
             { img: '2.png', text: '房子裡 有 滿滿的 幸福' },
@@ -190,8 +203,6 @@
         ];
         
         const folderPath = ''; 
-        // ============================================
-
         let currentQIndex = 0;
         let currentWords = [];
         
@@ -202,13 +213,11 @@
         const nextBtn = document.getElementById('next-btn');
         const checkBtn = document.getElementById('check-btn');
         const progressEl = document.getElementById('progress');
-        const finalBtnsDiv = document.getElementById('final-buttons'); // 抓取結束按鈕區
+        const finalBtnsDiv = document.getElementById('final-buttons');
 
-        // 初始化第一題
         loadQuestion(currentQIndex);
 
         function loadQuestion(index) {
-            // 重置介面
             answerArea.innerHTML = '';
             optionsArea.innerHTML = '';
             msgEl.textContent = '';
@@ -217,19 +226,16 @@
             checkBtn.style.display = 'block';
             checkBtn.disabled = false;
             
-            // 如果題目做完了
             if (index >= questions.length) {
-                gameFinished(); // 呼叫結束函式
+                gameFinished();
                 return;
             }
 
-            // 載入圖片與進度
             const q = questions[index];
             imgEl.src = folderPath + q.img;
             imgEl.style.display = 'block';
             progressEl.textContent = `第 ${index + 1} 題 / 共 ${questions.length} 題`;
 
-            // 處理文字
             currentWords = q.text.split(' ').filter(Boolean); 
 
             let shuffledWords = [...currentWords];
@@ -241,51 +247,55 @@
             });
         }
 
-        // 遊戲結束時執行的動作
-        function gameFinished() {
-            imgEl.style.display = 'none'; // 隱藏圖片
-            answerArea.style.display = 'none'; // 隱藏作答區
-            optionsArea.style.display = 'none'; // 隱藏選項區
+        // ============================================
+        //  🔊 這裡就是控制說話的程式
+        // ============================================
+        function readSentence() {
+            // 1. 取得現在這題的正確句子
+            // 把中間的空白去掉，讀起來比較順 (例如 "泡泡 好像" -> "泡泡好像")
+            let textToRead = questions[currentQIndex].text.replace(/\s/g, '');
+
+            // 2. 建立語音物件
+            let utterance = new SpeechSynthesisUtterance(textToRead);
             
+            // 3. 設定語言為台灣繁體中文
+            utterance.lang = 'zh-TW'; 
+            
+            // 4. 設定速度 (1是正常，0.8比較慢適合學生)
+            utterance.rate = 0.8; 
+
+            // 5. 播放
+            window.speechSynthesis.cancel(); // 如果還在講上一句，先卡掉
+            window.speechSynthesis.speak(utterance);
+        }
+        // ============================================
+
+        function gameFinished() {
+            imgEl.style.display = 'none';
+            document.querySelector('.speak-btn').style.display = 'none'; // 隱藏朗讀按鈕
+            answerArea.style.display = 'none';
+            optionsArea.style.display = 'none';
             progressEl.innerHTML = "🎉 <br>恭喜！全部題目都完成了！";
             progressEl.style.color = "#d81b60";
-            progressEl.style.fontSize = "1.5rem";
-            
             checkBtn.style.display = 'none';
             nextBtn.style.display = 'none';
-            
-            // 顯示最後的跳轉按鈕
             finalBtnsDiv.style.display = 'flex';
         }
 
-        // 跳轉功能的函式
-        function goToLobby() {
-            // ../ 代表回到上一層 (根目錄)
-            window.location.href = '../index.html';
-        }
-
-        function goToGame1() {
-            // ../game1/ 代表回到上一層，再進入 game1 資料夾
-            window.location.href = '../game1/index.html';
-        }
+        function goToLobby() { window.location.href = '../index.html'; }
+        function goToGame2() { window.location.href = '../game2/index.html'; }
 
         function createWordCard(text) {
             const div = document.createElement('div');
             div.className = 'word-card';
             div.textContent = text;
             div.draggable = true;
-
             div.addEventListener('dragstart', () => div.classList.add('dragging'));
             div.addEventListener('dragend', () => div.classList.remove('dragging'));
-            
             div.addEventListener('click', () => {
-                if (div.parentElement === optionsArea) {
-                    answerArea.appendChild(div);
-                } else {
-                    optionsArea.appendChild(div);
-                }
+                if (div.parentElement === optionsArea) { answerArea.appendChild(div); } 
+                else { optionsArea.appendChild(div); }
             });
-
             return div;
         }
 
@@ -293,13 +303,11 @@
             const answerCards = answerArea.querySelectorAll('.word-card');
             const studentAnswer = Array.from(answerCards).map(card => card.textContent).join('');
             const correctAnswer = currentWords.join('');
-
             if (studentAnswer === correctAnswer) {
                 msgEl.textContent = '🎉 答對了！你好棒！';
                 msgEl.className = 'correct-msg';
                 checkBtn.style.display = 'none';
                 nextBtn.style.display = 'block'; 
-                
                 answerCards.forEach(c => c.draggable = false);
             } else {
                 msgEl.textContent = '❌ 再試試看，順序好像不對喔！';
@@ -312,46 +320,9 @@
             loadQuestion(currentQIndex);
         }
 
-        // --- 拖放功能核心邏輯 ---
         const dropZones = [answerArea, optionsArea];
-
         dropZones.forEach(zone => {
             zone.addEventListener('dragover', e => {
                 e.preventDefault();
                 const afterElement = getDragAfterElement(zone, e.clientX, e.clientY);
-                const draggable = document.querySelector('.dragging');
-                if (afterElement == null) {
-                    zone.appendChild(draggable);
-                } else {
-                    zone.insertBefore(draggable, afterElement);
-                }
-            });
-        });
-
-        function getDragAfterElement(container, x, y) {
-            const draggableElements = [...container.querySelectorAll('.word-card:not(.dragging)')];
-
-            return draggableElements.reduce((closest, child) => {
-                const box = child.getBoundingClientRect();
-                const offsetX = x - box.left - box.width / 2;
-                const offsetY = y - box.top - box.height / 2;
-                
-                if (offsetX < 0 && offsetX > closest.offset) {
-                    return { offset: offsetX, element: child };
-                } else {
-                    return closest;
-                }
-            }, { offset: Number.NEGATIVE_INFINITY }).element;
-        }
-
-        function shuffleArray(array) {
-            for (let i = array.length - 1; i > 0; i--) {
-                const j = Math.floor(Math.random() * (i + 1));
-                [array[i], array[j]] = [array[j], array[i]];
-            }
-        }
-
-    </script>
-</body>
-
-</html>
+                const draggable = document.querySelector('.dragging
