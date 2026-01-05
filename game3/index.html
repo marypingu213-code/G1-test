@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>第三關：語詞配對</title>
+    <style>
+        body {
+            font-family: "微軟正黑體", sans-serif;
+            background-color: #fff3e0; /* 橘色系背景 */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+        }
+
+        h1 { color: #e65100; margin-bottom: 10px; }
+
+        #info-bar {
+            margin-bottom: 20px;
+            font-size: 1.2rem;
+            color: #555;
+            font-weight: bold;
+            display: flex;
+            gap: 20px;
+        }
+
+        /* 遊戲網格區域 */
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr); /* 電腦版一排4張 */
+            gap: 15px;
+            max-width: 800px;
+            width: 100%;
+            perspective: 1000px; /* 3D透視感 */
+        }
+
+        /* 手機版調整為一排3張或2張 */
+        @media (max-width: 600px) {
+            .grid-container {
+                grid-template-columns: repeat(3, 1fr); 
+                gap: 10px;
+            }
+        }
+
+        /* 卡片容器 */
+        .card {
+            background-color: transparent;
+            height: 120px; /* 卡片高度 */
+            cursor: pointer;
+            position: relative;
+            transform-style: preserve-3d;
+            transition: transform 0.5s;
+        }
+
+        /* 卡片翻轉狀態 */
+        .card.flipped {
+            transform: rotateY(180deg);
+            cursor: default;
+        }
+
+        /* 卡片正面與背面 */
+        .card-face {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden; /* 背面隱藏 */
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        /* 卡片背面 (蓋起來的樣子 - 橘色底) */
+        .card-front {
+            background-color: #ff9800;
+            color: white;
+            font-size: 2rem;
+            border: 4px solid white;
+        }
+
+        /* 卡片正面 (顯示圖片 - 翻過來) */
+        .card-back {
+            background-color: white;
+            transform: rotateY(180deg);
+            border: 2px solid #ff9800;
+        }
+
+        .card-back img {
+            max-width: 90%;
+            max-height: 90%;
+            object-fit: contain;
+        }
+
+        /* 答對時的特效 */
+        .matched .card-back {
+            background-color: #dcedc8; /* 淺綠色背景 */
+            border-color: #4CAF50;
+        }
+
+        /* 結束按鈕區 */
+        .controls {
+            margin-top: 30px;
+            display: none; /* 預設隱藏 */
+            gap: 20px;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        button {
+            padding: 12px 40px;
+            font-size: 1.3rem;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            font-weight: bold;
+            color: white;
+            box-shadow: 0 4px 0 rgba(0,0,0,0.2);
+            transition: transform 0.1s;
+        }
+        
+        button:active { transform: translateY(4px); box-shadow: none; }
+
+        .btn-lobby { background-color: #795548; } 
+        .btn-game4 { background-color: #2196F3; } 
+
+    </style>
+</head>
+<body>
+
+    <h1>第三關：語詞配對</h1>
+    <div id="info-bar">
+        <span>剩餘配對：<span id="pairs-left">7</span></span>
+    </div>
+
+    <div class="grid-container" id="game-grid">
+        </div>
+
+    <div class="controls" id="end-menu">
+        <h2 style="color: #2e7d32;">🎉 太棒了！挑戰成功！</h2>
+        <div style="display: flex; gap: 20px;">
+            <button class="btn-lobby" onclick="goToLobby()">🏠 回到大廳</button>
+            <button class="btn-game4" onclick="goToGame4()">前往第四關 ➔</button>
+        </div>
+    </div>
+
+    <script>
+        // ============================================
+        //  設定區
+        // ============================================
+        const totalPairs = 7; // 總共有幾對 (14張卡 = 7對)
+        const folderPath = ''; // 圖片就在同一層資料夾
+        // ============================================
+
+        const grid = document.getElementById('game-grid');
+        const pairsLeftEl = document.getElementById('pairs-left');
+        const endMenu = document.getElementById('end-menu');
+
+        let cardsArray = [];
+        let hasFlippedCard = false;
+        let lockBoard = false; // 鎖定版面，防止一次點三張
+        let firstCard, secondCard;
+        let pairsLeft = totalPairs;
+
+        // 初始化遊戲
+        initGame();
+
+        function initGame() {
+            // 1. 產生卡片資料
+            // 修改這裡：把 .png 改成 .jpg
+            for (let i = 1; i <= totalPairs; i++) {
+                cardsArray.push({ id: i, img: `${i}.jpg` });     // 1.jpg, 2.jpg...
+                cardsArray.push({ id: i, img: `${i}-1.jpg` });   // 1-1.jpg, 2-1.jpg...
+            }
+
+            // 2. 洗牌 (Fisher-Yates Shuffle)
+            cardsArray.sort(() => 0.5 - Math.random());
+
+            // 3. 建立 HTML
+            cardsArray.forEach(item => {
+                const card = document.createElement('div');
+                card.classList.add('card');
+                card.dataset.id = item.id; 
+
+                card.innerHTML = `
+                    <div class="card-face card-front">?</div>
+                    <div class="card-face card-back">
+                        <img src="${folderPath + item.img}" alt="card">
+                    </div>
+                `;
+
+                card.addEventListener('click', flipCard);
+                grid.appendChild(card);
+            });
+        }
+
+        function flipCard() {
+            // 如果版面鎖定(正在判斷兩張牌) 或 點擊同一張牌 -> 不做動作
+            if (lockBoard) return;
+            if (this === firstCard) return;
+
+            this.classList.add('flipped');
+
+            if (!hasFlippedCard) {
+                // 這是翻的第一張牌
+                hasFlippedCard = true;
+                firstCard = this;
+                return;
+            }
+
+            // 這是翻的第二張牌
+            secondCard = this;
+            checkForMatch();
+        }
+
+        function checkForMatch() {
+            // 檢查兩張牌的 data-id 是否一樣
+            let isMatch = firstCard.dataset.id === secondCard.dataset.id;
+
+            if (isMatch) {
+                disableCards();
+            } else {
+                unflipCards();
+            }
+        }
+
+        function disableCards() {
+            // 配對成功：移除點擊事件，保持翻開
+            firstCard.removeEventListener('click', flipCard);
+            secondCard.removeEventListener('click', flipCard);
+            
+            // 加上特效樣式
+            firstCard.classList.add('matched');
+            secondCard.classList.add('matched');
+
+            resetBoard();
+            
+            // 更新剩餘對數
+            pairsLeft--;
+            pairsLeftEl.textContent = pairsLeft;
+
+            // 檢查是否結束
+            if (pairsLeft === 0) {
+                setTimeout(() => {
+                    endMenu.style.display = 'flex';
+                    window.scrollTo(0, document.body.scrollHeight);
+                }, 500);
+            }
+        }
+
+        function unflipCards() {
+            // 配對失敗：鎖定版面，1秒後蓋回去
+            lockBoard = true;
+
+            setTimeout(() => {
+                firstCard.classList.remove('flipped');
+                secondCard.classList.remove('flipped');
+                resetBoard();
+            }, 1000);
+        }
+
+        function resetBoard() {
+            [hasFlippedCard, lockBoard] = [false, false];
+            [firstCard, secondCard] = [null, null];
+        }
+
+        // 跳轉功能
+        function goToLobby() {
+            window.location.href = '../index.html';
+        }
+
+        function goToGame4() {
+            // 前往第四關
+            window.location.href = '../game4/index.html';
+        }
+
+    </script>
+</body>
+</html>
