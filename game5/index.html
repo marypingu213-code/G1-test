@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>第五關：圖片組合</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@500;700&display=swap" rel="stylesheet">
+
+    <style>
+        body {
+            font-family: "Zen Maru Gothic", "微軟正黑體", sans-serif;
+            background-color: #e0f7fa;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+        }
+
+        h1 { color: #006064; margin-bottom: 10px; }
+
+        #progress {
+            margin-bottom: 15px;
+            font-size: 1.2rem;
+            color: #555;
+            font-weight: bold;
+        }
+
+        /* 題目大圖區域 */
+        .question-container {
+            background: white;
+            padding: 20px;
+            border-radius: 20px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+            text-align: center;
+            /* 讓容器稍微寬一點，適應變大的圖片 */
+            min-width: 300px;
+        }
+
+        #question-img {
+            /* ▼▼▼ 修改這裡：把題目圖片變大 ▼▼▼ */
+            height: 350px; 
+            /* ▲▲▲ 原本是 200px ▲▲▲ */
+            
+            max-width: 100%;
+            object-fit: contain;
+            border-radius: 10px;
+        }
+
+        .instruction {
+            color: #d81b60;
+            font-weight: bold;
+            margin-bottom: 15px;
+            font-size: 1.3rem; /* 字體也稍微加大 */
+        }
+
+        /* 選項區域 */
+        .options-container {
+            display: flex;
+            justify-content: center;
+            gap: 25px; /* 間距拉大 */
+            flex-wrap: wrap;
+            max-width: 1000px; /* 容器加寬，讓大圖排得下 */
+        }
+
+        /* 選項圖片按鈕 */
+        .option-card {
+            background: white;
+            border: 5px solid white; /* 邊框加粗一點 */
+            border-radius: 20px;
+            cursor: pointer;
+            transition: transform 0.2s, border-color 0.2s;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+            padding: 10px;
+            position: relative;
+        }
+
+        .option-card img {
+            /* ▼▼▼ 修改這裡：把選項圖片變大 ▼▼▼ */
+            width: 220px;
+            height: 220px;
+            /* ▲▲▲ 原本是 130px ▲▲▲ */
+            
+            object-fit: contain;
+            display: block;
+            border-radius: 10px;
+        }
+
+        .option-card:hover {
+            transform: scale(1.05);
+        }
+
+        /* 選中狀態 (藍色框) */
+        .option-card.selected {
+            border-color: #2196F3;
+            background-color: #e3f2fd;
+            transform: translateY(-5px);
+        }
+
+        /* 答對 (綠色框) */
+        .option-card.correct {
+            border-color: #4CAF50;
+            background-color: #e8f5e9;
+        }
+
+        /* 答錯 (紅色框) */
+        .option-card.wrong {
+            border-color: #f44336;
+            opacity: 0.5;
+        }
+
+        /* 手機版適應：如果螢幕太小，自動縮小一點以免跑版 */
+        @media (max-width: 768px) {
+            #question-img { height: 200px; }
+            .option-card img { width: 100px; height: 100px; }
+        }
+
+        /* 控制按鈕 */
+        .controls {
+            margin-top: 40px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+        }
+
+        button {
+            padding: 15px 50px; /* 按鈕也稍微變大 */
+            font-size: 1.5rem;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            font-weight: bold;
+            color: white;
+            box-shadow: 0 4px 0 rgba(0,0,0,0.2);
+            font-family: "Zen Maru Gothic", sans-serif;
+            display: none;
+        }
+
+        #next-btn { background-color: #009688; }
+        .final-btns { display: none; gap: 20px; }
+        .btn-lobby { background-color: #795548; }
+
+        #message {
+            font-size: 1.8rem; /* 訊息字體加大 */
+            font-weight: bold;
+            height: 50px;
+            margin-top: 15px;
+            text-align: center;
+        }
+        .correct-text { color: green; }
+        .wrong-text { color: red; }
+
+    </style>
+</head>
+<body>
+
+    <h1>第五關：圖片組合</h1>
+    <div id="progress">準備開始...</div>
+
+    <div class="question-container">
+        <img id="question-img" src="" alt="題目">
+    </div>
+
+    <div class="instruction">請選出 2 張正確的圖片：</div>
+
+    <div class="options-container" id="options-box">
+        </div>
+
+    <div id="message"></div>
+
+    <div class="controls">
+        <button id="next-btn" onclick="nextQuestion()">下一題 ➔</button>
+        
+        <div class="final-btns" id="final-btns">
+            <button class="btn-lobby" style="display:block" onclick="goToLobby()">🏠 回到大廳</button>
+        </div>
+    </div>
+
+    <script>
+        // ============================================
+        //  題目設定區
+        // ============================================
+        const questions = [
+            { q: '1.jpg', ans: ['1-2.jpg', '1-3.jpg'] },
+            { q: '2.jpg', ans: ['2-1.jpg', '2-2.jpg'] },
+            { q: '3.jpg', ans: ['3-1.jpg', '3-2.jpg'] },
+            { q: '4.jpg', ans: ['4-1.jpg', '4-2.jpg'] },
+            { q: '5.jpg', ans: ['5-1.jpg', '5-2.jpg'] }
+        ];
+
+        const folderPath = ''; 
+        // ============================================
+
+        let currentIdx = 0;
+        let selectedCards = []; 
+        let currentOptions = []; 
+
+        const qImg = document.getElementById('question-img');
+        const optionsBox = document.getElementById('options-box');
+        const progressEl = document.getElementById('progress');
+        const msgEl = document.getElementById('message');
+        const nextBtn = document.getElementById('next-btn');
+        const finalBtns = document.getElementById('final-btns');
+
+        const allPossibleAnswers = [];
+        questions.forEach(q => {
+            allPossibleAnswers.push(q.ans[0]);
+            allPossibleAnswers.push(q.ans[1]);
+        });
+
+        loadQuestion(currentIdx);
+
+        function loadQuestion(index) {
+            if (index >= questions.length) {
+                gameFinished();
+                return;
+            }
+
+            selectedCards = [];
+            msgEl.textContent = '';
+            nextBtn.style.display = 'none';
+            optionsBox.innerHTML = ''; 
+
+            const data = questions[index];
+            qImg.src = folderPath + data.q;
+            progressEl.textContent = `第 ${index + 1} 題 / 共 ${questions.length} 題`;
+
+            let options = [...data.ans]; 
+            
+            let distractor;
+            do {
+                distractor = allPossibleAnswers[Math.floor(Math.random() * allPossibleAnswers.length)];
+            } while (options.includes(distractor)); 
+
+            options.push(distractor);
+            shuffleArray(options);
+            currentOptions = options;
+
+            options.forEach(optFileName => {
+                const card = document.createElement('div');
+                card.className = 'option-card';
+                card.dataset.file = optFileName; 
+                
+                const img = document.createElement('img');
+                img.src = folderPath + optFileName;
+                card.appendChild(img);
+
+                card.onclick = () => selectCard(card, optFileName, data.ans);
+                optionsBox.appendChild(card);
+            });
+        }
+
+        function selectCard(cardElement, fileName, correctAnswers) {
+            if (nextBtn.style.display === 'block') return;
+            if (cardElement.classList.contains('selected')) {
+                cardElement.classList.remove('selected');
+                selectedCards = selectedCards.filter(f => f !== fileName);
+                return;
+            }
+
+            cardElement.classList.add('selected');
+            selectedCards.push(fileName);
+
+            if (selectedCards.length === 2) {
+                checkAnswer(correctAnswers);
+            }
+        }
+
+        function checkAnswer(correctAnswers) {
+            const isCorrect = selectedCards.every(file => correctAnswers.includes(file));
+            const cards = document.querySelectorAll('.option-card');
+
+            if (isCorrect) {
+                msgEl.innerHTML = '<span class="correct-text">🎉 答對了！好棒！</span>';
+                cards.forEach(card => {
+                    if (selectedCards.includes(card.dataset.file)) {
+                        card.classList.remove('selected');
+                        card.classList.add('correct'); 
+                    }
+                });
+                nextBtn.style.display = 'block';
+
+            } else {
+                msgEl.innerHTML = '<span class="wrong-text">❌ 不太對喔，再試試看！</span>';
+                cards.forEach(card => {
+                    if (selectedCards.includes(card.dataset.file)) {
+                        card.classList.add('wrong'); 
+                    }
+                });
+
+                setTimeout(() => {
+                    cards.forEach(card => {
+                        card.classList.remove('selected', 'wrong');
+                    });
+                    selectedCards = [];
+                    msgEl.textContent = '';
+                }, 1000);
+            }
+        }
+
+        function nextQuestion() {
+            currentIdx++;
+            loadQuestion(currentIdx);
+        }
+
+        function gameFinished() {
+            document.querySelector('.question-container').style.display = 'none';
+            document.querySelector('.instruction').style.display = 'none';
+            optionsBox.style.display = 'none';
+            msgEl.textContent = '';
+            nextBtn.style.display = 'none';
+
+            progressEl.innerHTML = "🎉 恭喜！全部配對完成！";
+            progressEl.style.color = "#006064";
+            progressEl.style.fontSize = "1.5rem";
+
+            finalBtns.style.display = 'flex';
+        }
+
+        function goToLobby() {
+            window.location.href = '../index.html';
+        }
+
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+        }
+
+    </script>
+</body>
+</html>
