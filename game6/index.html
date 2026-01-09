@@ -42,10 +42,12 @@
         }
 
         #question-img {
-            height: 300px; /* 大圖高度 */
+            height: 300px; 
             max-width: 100%;
             object-fit: contain;
             border-radius: 10px;
+            display: block; /* 確保圖片有顯示空間 */
+            background-color: #eee; /* 載入前顯示灰色底 */
         }
 
         .instruction {
@@ -77,7 +79,7 @@
         }
 
         .option-card img {
-            width: 180px; /* 選項圖片大小 */
+            width: 180px;
             height: 180px;
             object-fit: contain;
             display: block;
@@ -102,7 +104,7 @@
             opacity: 0.5;
         }
 
-        /* 鎖定狀態 (防止重複點擊) */
+        /* 鎖定狀態 */
         .disabled {
             pointer-events: none;
         }
@@ -132,7 +134,7 @@
             color: white;
             box-shadow: 0 4px 0 rgba(0,0,0,0.2);
             font-family: "Zen Maru Gothic", sans-serif;
-            display: none; /* 預設隱藏 */
+            display: none; 
         }
 
         #next-btn { background-color: #8e24aa; }
@@ -178,7 +180,6 @@
     <script>
         // ============================================
         //  題目設定區
-        //  q: 題目圖, options: [所有選項], ans: 正確答案檔名
         // ============================================
         const questions = [
             // 第一組：3 選 1
@@ -247,13 +248,15 @@
             msgEl.textContent = '';
             nextBtn.style.display = 'none';
             optionsBox.innerHTML = ''; 
-            optionsBox.classList.remove('disabled'); // 解除鎖定
+            optionsBox.classList.remove('disabled');
 
             const data = questions[index];
             qImg.src = folderPath + data.q;
+            
+            // 這一行如果執行成功，上面的「準備開始...」就會變文字
             progressEl.textContent = `第 ${index + 1} 題 / 共 ${questions.length} 題`;
 
-            // 1. 複製選項並打亂順序 (隨機分配)
+            // 1. 複製選項並打亂
             let currentOptions = [...data.options];
             shuffleArray(currentOptions);
 
@@ -274,24 +277,20 @@
         }
 
         function checkAnswer(cardElement, selectedFile, correctFile) {
-            if (isAnswered) return; // 防止重複點擊
+            if (isAnswered) return; 
             isAnswered = true;
             
-            // 鎖定所有選項，不能再點
             optionsBox.classList.add('disabled');
 
             const allCards = document.querySelectorAll('.option-card');
 
             if (selectedFile === correctFile) {
-                // 答對了
                 msgEl.innerHTML = '<span class="correct-text">🎉 答對了！</span>';
                 cardElement.classList.add('correct');
             } else {
-                // 答錯了
                 msgEl.innerHTML = '<span class="wrong-text">❌ 不對喔，正確答案是...</span>';
                 cardElement.classList.add('wrong');
                 
-                // 自動標示出正確答案
                 allCards.forEach(card => {
                     if (card.querySelector('img').src.includes(correctFile)) {
                         card.classList.add('correct');
@@ -299,7 +298,6 @@
                 });
             }
             
-            // 顯示下一題按鈕
             nextBtn.style.display = 'block';
         }
 
@@ -316,3 +314,23 @@
             nextBtn.style.display = 'none';
 
             progressEl.innerHTML = "🎉 恭喜！全部挑戰完成！";
+            progressEl.style.color = "#6a1b9a";
+            progressEl.style.fontSize = "1.5rem";
+
+            finalBtns.style.display = 'flex';
+        }
+
+        function goToLobby() {
+            window.location.href = '../index.html';
+        }
+
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+        }
+
+    </script>
+</body>
+</html>
