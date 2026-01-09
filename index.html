@@ -34,7 +34,7 @@
             gap: 20px;
             flex-wrap: wrap;
             justify-content: center;
-            max-width: 1000px; /* 加寬一點讓按鈕好排 */
+            max-width: 1000px;
         }
 
         .game-link {
@@ -47,8 +47,8 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            width: 200px;     /* 固定寬度讓版面整齊 */
-            height: 100px;    /* 固定高度 */
+            width: 200px;
+            height: 100px;
             transition: transform 0.1s, filter 0.3s;
             text-align: center;
             box-shadow: 0 6px 0 rgba(0,0,0,0.2);
@@ -65,30 +65,21 @@
             transform: translateY(-5px);
         }
 
-        /* --- 各關卡的顏色設定 --- */
-        
-        /* 第一關：綠色 */
+        /* 各關卡顏色 */
         .level-1 { background-color: #4CAF50; box-shadow: 0 6px 0 #2E7D32; }
-
-        /* 第二關：紫色 (暫未開放或新遊戲) */
         .level-2 { background-color: #9c27b0; box-shadow: 0 6px 0 #7b1fa2; }
-
-        /* 第三關：橘色 */
         .level-3 { background-color: #ff9800; box-shadow: 0 6px 0 #e65100; }
-
-        /* 第四關：藍色 */
         .level-4 { background-color: #2196F3; box-shadow: 0 6px 0 #1565c0; }
-        
-        /* 第五關：青綠色 */
         .level-5 { background-color: #009688; box-shadow: 0 6px 0 #00695c; }
+        
+        /* 第六關：紫色 */
+        .level-6 { background-color: #673ab7; box-shadow: 0 6px 0 #4527a0; }
 
-        /* 頁尾小字 */
         footer {
             margin-top: 50px;
             color: #888;
             font-size: 0.9rem;
         }
-
     </style>
 </head>
 <body>
@@ -96,25 +87,12 @@
     <h1>🏰 國語文遊戲樂園</h1>
 
     <div class="menu-container">
-        <a href="game1/index.html" class="game-link level-1">
-            第一關<br>改錯字
-        </a>
-
-        <a href="game2/index.html" class="game-link level-2">
-            第二關<br>看圖句子重組
-        </a>
-
-        <a href="game3/index.html" class="game-link level-3">
-            第三關<br>語詞配對
-        </a>
-
-        <a href="game4/index.html" class="game-link level-4">
-            第四關<br>部首大挑戰
-        </a>
-
-        <a href="game5/index.html" class="game-link level-5">
-            第五關<br>圖片組合
-        </a>
+        <a href="game1/index.html" class="game-link level-1">第一關<br>改錯字</a>
+        <a href="game2/index.html" class="game-link level-2">第二關<br>句子重組</a>
+        <a href="game3/index.html" class="game-link level-3">第三關<br>語詞配對</a>
+        <a href="game4/index.html" class="game-link level-4">第四關<br>部首大挑戰</a>
+        <a href="game5/index.html" class="game-link level-5">第五關<br>圖片組合</a>
+        <a href="game6/index.html" class="game-link level-6">第六關<br>精挑細選</a>
     </div>
 
     <footer>
