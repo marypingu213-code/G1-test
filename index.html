@@ -3,37 +3,41 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>情緒小偵探：互動闖關</title>
+    <title>社會技巧：情緒與助人實驗室</title>
     <style>
-        body { font-family: 'Microsoft JhengHei', sans-serif; background-color: #f7f9fc; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; margin: 0; padding: 20px; }
+        :root { --primary: #3498db; --secondary: #9b59b6; --success: #2ecc71; --warning: #f1c40f; --danger: #e74c3c; }
+        body { font-family: 'Microsoft JhengHei', sans-serif; background-color: #f0f7f9; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; margin: 0; padding: 20px; }
         
-        .container { width: 100%; max-width: 850px; background: white; padding: 40px; border-radius: 30px; box-shadow: 0 15px 35px rgba(0,0,0,0.1); text-align: center; }
+        /* 統一寬版面 */
+        .container { width: 100%; max-width: 900px; background: white; padding: 40px; border-radius: 30px; box-shadow: 0 15px 35px rgba(0,0,0,0.1); text-align: center; }
         
-        /* 首頁樣式 */
-        .emoji-cloud { font-size: 60px; margin: 30px 0; letter-spacing: 15px; animation: bounce 2s infinite; }
-        @keyframes bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
-        
-        .start-btn { padding: 25px 80px; font-size: 32px; background: #2ecc71; color: white; border: none; border-radius: 50px; cursor: pointer; font-weight: bold; box-shadow: 0 8px 15px rgba(46, 204, 113, 0.3); transition: 0.3s; }
-        .start-btn:hover { background: #27ae60; transform: scale(1.05); }
+        /* 主選單按鈕 */
+        .menu-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; margin-top: 30px; }
+        .menu-card { padding: 40px; border-radius: 20px; border: 4px solid var(--primary); cursor: pointer; transition: 0.3s; background: white; }
+        .menu-card:hover { transform: translateY(-10px); background: #e1f5fe; }
+        .menu-card i { font-size: 50px; display: block; margin-bottom: 15px; }
+        .menu-card h2 { margin: 0; color: var(--primary); }
 
-        /* 遊戲區域樣式 */
-        #game-area { display: none; } /* 初始隱藏 */
-        .question-text { font-size: 26px; color: #d35400; font-weight: bold; margin-bottom: 20px; }
-        .image-container { width: 350px; height: 350px; margin: 0 auto 30px; border: 6px solid #ffcc00; border-radius: 20px; overflow: hidden; background: #fff; display: flex; align-items: center; justify-content: center; }
+        /* 遊戲區域 */
+        .game-screen { display: none; }
+        .question-text { font-size: 28px; color: #d35400; font-weight: bold; margin-bottom: 20px; }
+        .image-container { width: 350px; height: 350px; margin: 0 auto 30px; border: 6px solid var(--warning); border-radius: 20px; overflow: hidden; background: #fff; }
         .image-container img { width: 100%; height: 100%; object-fit: cover; }
 
-        .options-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; max-width: 600px; margin: 0 auto; }
-        button.opt-btn { padding: 20px; font-size: 24px; cursor: pointer; border: 3px solid #3498db; background: white; border-radius: 15px; transition: 0.2s; font-weight: bold; }
-        button.opt-btn:hover:not(:disabled) { background: #e1f5fe; }
-        
-        .correct { background: #2ecc71 !important; color: white; border-color: #27ae60; }
-        .wrong { background: #e74c3c !important; color: white; border-color: #c0392b; }
+        /* 選項按鈕 */
+        .options-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; max-width: 650px; margin: 0 auto; }
+        button.btn { padding: 20px; font-size: 24px; cursor: pointer; border: 3px solid var(--primary); background: white; border-radius: 15px; font-weight: bold; transition: 0.2s; }
+        button.btn:hover:not(:disabled) { background: #f0f8ff; }
+        .correct { background: var(--success) !important; color: white; border-color: #27ae60; }
+        .wrong { background: var(--danger) !important; color: white; border-color: #c0392b; }
 
-        /* 反思問句 */
-        #reflection-area { margin-top: 30px; padding: 20px; background: #fff9db; border-radius: 15px; border: 2px dashed #f1c40f; display: none; }
-        .reflection-text { font-size: 24px; color: #856404; font-weight: bold; }
+        /* 提示區域 */
+        .feedback-box { margin-top: 25px; padding: 25px; border-radius: 15px; display: none; background: #fff9db; border: 2px dashed var(--warning); }
+        .feedback-text { font-size: 24px; color: #856404; font-weight: bold; }
         
-        #next-btn { margin-top: 25px; padding: 15px 60px; background: #9b59b6; color: white; border: none; border-radius: 50px; cursor: pointer; font-size: 22px; display: none; }
+        .nav-btns { margin-top: 30px; display: flex; justify-content: center; gap: 20px; }
+        .next-btn { padding: 15px 50px; background: var(--secondary); color: white; border: none; border-radius: 50px; cursor: pointer; font-size: 22px; display: none; }
+        .home-btn { padding: 10px 30px; background: #95a5a6; color: white; border: none; border-radius: 10px; cursor: pointer; }
 
         /* 左下角時鐘 */
         #live-clock { position: fixed; bottom: 20px; left: 20px; background: #2c3e50; color: white; padding: 10px 20px; border-radius: 12px; font-size: 18px; font-family: monospace; z-index: 100; }
@@ -41,115 +45,161 @@
 </head>
 <body>
 
-    <div id="home-screen" class="container">
-        <h1>🔍 情緒小偵探</h1>
-        <p style="font-size: 24px; color: #34495e;">歡迎來到表情實驗室！<br>準備好觀察每個人的心情了嗎？</p>
-        <div class="emoji-cloud">😃 😡 😢 😨 🤩</div>
-        <button class="start-btn" onclick="startGame()">開始挑戰</button>
+    <div id="main-menu" class="container">
+        <h1>🔍 社會技巧實驗室</h1>
+        <p style="font-size: 24px; color: #7f8c8d;">老師，今天想要帶大家練習什麼？</p>
+        <div class="menu-grid">
+            <div class="menu-card" onclick="startGame('emotion')">
+                <span>🔍</span>
+                <h2>情緒小偵探</h2>
+                <p>辨識開心、生氣、難過等心情</p>
+            </div>
+            <div class="menu-card" onclick="startGame('helper')">
+                <span>🤝</span>
+                <h2>小小助人高手</h2>
+                <p>學習當朋友難過時該怎麼做</p>
+            </div>
+        </div>
     </div>
 
-    <div id="game-area" class="container">
-        <div id="q-text" class="question-text">這張臉是什麼感覺呢？</div>
+    <div id="game-container" class="container game-screen">
+        <div id="q-text" class="question-text"></div>
         <div class="image-container">
-            <img id="q-image" src="" alt="情緒圖片">
+            <img id="display-img" src="" alt="教學圖片">
         </div>
-        <div class="options-grid" id="options-bin"></div>
-        <div id="reflection-area">
-            <p class="reflection-text" id="ref-question"></p>
-            <p style="color: #666;">(可以舉手分享喔！)</p>
+        <div id="options-bin" class="options-grid"></div>
+        
+        <div id="feedback-area" class="feedback-box">
+            <p class="feedback-text" id="feedback-msg"></p>
+            <p style="color: #666; font-size: 18px;">(請舉手分享想法喔！)</p>
         </div>
-        <button id="next-btn" onclick="nextQuestion()">下一題 ➔</button>
+
+        <div class="nav-btns">
+            <button class="home-btn" onclick="goHome()">回主選單</button>
+            <button id="next-btn" class="next-btn" onclick="nextStep()">下一題 ➔</button>
+        </div>
     </div>
 
     <div id="live-clock">載入時間...</div>
 
     <script>
-        const questions = [
-            { id: "happy", name: "開心", img: "image/happy.png", options: ["開心", "難過"], correct: 0 },
-            { id: "anger", name: "生氣", img: "image/anger.png", options: ["害怕", "生氣"], correct: 1 },
-            { id: "sad", name: "難過", img: "image/sad.png", options: ["難過", "高興"], correct: 0 },
-            { id: "fear", name: "害怕", img: "image/fear.png", options: ["害怕", "冷靜"], correct: 0 },
-            { id: "hate", name: "討厭", img: "image/hate.png", options: ["討厭", "開心"], correct: 0 },
-            { id: "glad", name: "高興", img: "image/glad.png", options: ["難過", "高興"], correct: 1 },
-            { id: "chill", name: "冷靜", img: "image/chill.png", options: ["生氣", "冷靜"], correct: 1 }
+        // 資料設定
+        const emotionData = [
+            { id: "happy", name: "開心", img: "image/happy.png", options: ["開心", "難過"], correct: 0, ref: "什麼時候你也會感覺開心呢？" },
+            { id: "anger", name: "生氣", img: "image/anger.png", options: ["害怕", "生氣"], correct: 1, ref: "當你生氣時，你會怎麼讓自己冷靜？" },
+            { id: "sad", name: "難過", img: "image/sad.png", options: ["難過", "高興"], correct: 0, ref: "這時候你最希望別人對你說什麼？" }
         ];
 
+        const helperData = [
+            { 
+                scenario: "小美在跑步時跌倒了，看起來很痛...",
+                img: "image/sad.png", 
+                options: ["拿衛生紙給她", "笑她愛哭鬼", "請老師幫忙"],
+                correct: [0, 2],
+                feedback: "給予關懷或尋求老師幫助都是很棒的選擇！"
+            },
+            { 
+                scenario: "小美找不到畫筆，急得快哭了...",
+                img: "image/fear.png", 
+                options: ["問她：需要幫忙嗎？", "不理她繼續畫", "陪她一起找"],
+                correct: [0, 2],
+                feedback: "主動詢問或陪伴對方，能讓她不那麼害怕喔！"
+            }
+        ];
+
+        let currentMode = '';
         let currentIdx = 0;
 
-        // 圖片預載
-        function preload() {
-            questions.forEach(q => {
-                const img = new Image();
-                img.src = q.img;
-            });
+        // 啟動遊戲
+        function startGame(mode) {
+            currentMode = mode;
+            currentIdx = 0;
+            document.getElementById('main-menu').style.display = 'none';
+            document.getElementById('game-container').style.display = 'block';
+            loadContent();
         }
 
-        function startGame() {
-            document.getElementById('home-screen').style.display = 'none';
-            document.getElementById('game-area').style.display = 'block';
-            preload(); // 在此時開始載入
-            loadQuestion();
-        }
-
-        function loadQuestion() {
-            const q = questions[currentIdx];
-            document.getElementById('q-image').src = q.img;
-            document.getElementById('q-text').innerText = "這張臉是什麼感覺呢？";
-            document.getElementById('reflection-area').style.display = 'none';
-            document.getElementById('next-btn').style.display = 'none';
-            
+        // 載入內容
+        function loadContent() {
+            const container = document.getElementById('game-container');
+            const feedback = document.getElementById('feedback-area');
+            const nextBtn = document.getElementById('next-btn');
             const bin = document.getElementById('options-bin');
-            bin.innerHTML = '';
+            
+            feedback.style.display = 'none';
+            nextBtn.style.display = 'none';
             bin.style.display = 'grid';
+            bin.innerHTML = '';
 
-            q.options.forEach((opt, index) => {
-                const btn = document.createElement('button');
-                btn.className = 'opt-btn';
-                btn.innerText = opt;
-                btn.onclick = () => checkAnswer(index, q.correct, btn);
-                bin.appendChild(btn);
-            });
+            if (currentMode === 'emotion') {
+                const q = emotionData[currentIdx];
+                document.getElementById('q-text').innerText = "這張臉是什麼感覺呢？";
+                document.getElementById('display-img').src = q.img;
+                q.options.forEach((opt, idx) => {
+                    createButton(opt, idx === q.correct);
+                });
+            } else {
+                const m = helperData[currentIdx];
+                document.getElementById('q-text').innerText = m.scenario;
+                document.getElementById('display-img').src = m.img;
+                m.options.forEach((opt, idx) => {
+                    const isCorrect = m.correct.includes(idx);
+                    createButton(opt, isCorrect);
+                });
+            }
         }
 
-        function checkAnswer(selected, correct, btn) {
-            const q = questions[currentIdx];
-            const buttons = document.querySelectorAll('.opt-btn');
-            
-            if (selected === correct) {
+        function createButton(text, isCorrect) {
+            const btn = document.createElement('button');
+            btn.className = 'btn';
+            btn.innerText = text;
+            btn.onclick = () => handleChoice(isCorrect, btn);
+            document.getElementById('options-bin').appendChild(btn);
+        }
+
+        function handleChoice(isCorrect, btn) {
+            if (isCorrect) {
                 btn.classList.add('correct');
+                const buttons = document.querySelectorAll('.btn');
                 buttons.forEach(b => b.disabled = true);
                 
                 setTimeout(() => {
                     document.getElementById('options-bin').style.display = 'none';
-                    document.getElementById('q-text').innerText = "觀察正確！";
-                    document.getElementById('reflection-area').style.display = 'block';
-                    document.getElementById('ref-question').innerText = `想想看，你什麼時候也會感覺「${q.name}」呢？`;
+                    document.getElementById('feedback-area').style.display = 'block';
+                    
+                    const msg = (currentMode === 'emotion') 
+                        ? emotionData[currentIdx].ref 
+                        : helperData[currentIdx].feedback;
+                    
+                    document.getElementById('feedback-msg').innerText = msg;
                     document.getElementById('next-btn').style.display = 'inline-block';
-                }, 500);
+                }, 600);
             } else {
                 btn.classList.add('wrong');
                 setTimeout(() => btn.classList.remove('wrong'), 800);
             }
         }
 
-        function nextQuestion() {
+        function nextStep() {
             currentIdx++;
-            if (currentIdx < questions.length) {
-                loadQuestion();
+            const max = (currentMode === 'emotion') ? emotionData.length : helperData.length;
+            if (currentIdx < max) {
+                loadContent();
             } else {
-                document.getElementById('game-area').innerHTML = `
-                    <h2 style="font-size: 36px; color: #27ae60;">太強了！偵探任務完成！</h2>
-                    <div class="emoji-cloud">🏆 🎊 🎈</div>
-                    <button onclick="location.reload()" class="start-btn" style="font-size: 24px; padding: 15px 40px;">回首頁</button>
-                `;
+                alert("太棒了！任務全部完成！");
+                goHome();
             }
+        }
+
+        function goHome() {
+            document.getElementById('main-menu').style.display = 'block';
+            document.getElementById('game-container').style.display = 'none';
         }
 
         function updateClock() {
             const now = new Date();
             document.getElementById('live-clock').innerText = "現在時間：" + now.toLocaleTimeString('zh-TW', { hour12: false });
         }
-
         setInterval(updateClock, 1000);
         updateClock();
     </script>
