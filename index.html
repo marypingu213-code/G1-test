@@ -3,75 +3,98 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>小一社會技巧：情緒偵探</title>
+    <title>情緒偵探：進階版</title>
     <style>
-        body { font-family: 'Microsoft JhengHei', sans-serif; background-color: #fdf6e3; display: flex; flex-direction: column; align-items: center; padding: 20px; margin: 0; min-height: 100vh; }
-        .container { max-width: 600px; background: white; padding: 30px; border-radius: 20px; box-shadow: 0 8px 16px rgba(0,0,0,0.1); text-align: center; margin-bottom: 50px; }
-        h1 { color: #2c3e50; font-size: 28px; }
-        .question { font-size: 22px; margin-bottom: 15px; color: #d35400; font-weight: bold; }
-        .image-placeholder { width: 280px; height: 280px; margin: 0 auto 20px; border: 4px solid #f39c12; border-radius: 15px; overflow: hidden; background: #fff; }
-        .image-placeholder img { width: 100%; height: 100%; object-fit: cover; }
-        .options { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-        button { padding: 12px; font-size: 18px; cursor: pointer; border: 2px solid #3498db; background: white; border-radius: 12px; transition: 0.2s; }
-        button:hover { background: #ebf5fb; }
+        body { font-family: 'Microsoft JhengHei', sans-serif; background-color: #f7f9fc; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; margin: 0; padding: 20px; }
+        
+        /* 版面加寬至 850px */
+        .container { width: 100%; max-width: 850px; background: white; padding: 40px; border-radius: 30px; box-shadow: 0 15px 35px rgba(0,0,0,0.1); text-align: center; position: relative; }
+        
+        h1 { color: #2c3e50; font-size: 32px; margin-bottom: 25px; }
+        .question-text { font-size: 26px; color: #d35400; font-weight: bold; margin-bottom: 20px; }
+        
+        /* 圖片容器優化 */
+        .image-container { width: 350px; height: 350px; margin: 0 auto 30px; border: 6px solid #ffcc00; border-radius: 20px; overflow: hidden; background: #fff; display: flex; align-items: center; justify-content: center; }
+        .image-container img { width: 100%; height: 100%; object-fit: cover; }
+
+        /* 按鈕設計：更寬大好點選 */
+        .options-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; max-width: 600px; margin: 0 auto; }
+        button { padding: 20px; font-size: 24px; cursor: pointer; border: 3px solid #3498db; background: white; border-radius: 15px; transition: all 0.2s; font-weight: bold; }
+        button:hover:not(:disabled) { background: #e1f5fe; transform: translateY(-2px); }
         .correct { background: #2ecc71 !important; color: white; border-color: #27ae60; }
         .wrong { background: #e74c3c !important; color: white; border-color: #c0392b; }
-        #feedback { margin-top: 15px; font-size: 20px; font-weight: bold; height: 25px; }
-        #next-btn { margin-top: 15px; padding: 10px 40px; background: #8e44ad; color: white; border: none; border-radius: 20px; display: none; cursor: pointer; font-size: 18px; }
+
+        /* 反思問句區塊：初始隱藏 */
+        #reflection-area { margin-top: 30px; padding: 20px; background: #fff9db; border-radius: 15px; border: 2px dashed #f1c40f; display: none; animation: fadeIn 0.5s; }
+        .reflection-text { font-size: 24px; color: #856404; font-weight: bold; }
         
-        /* 左下角時鐘樣式 */
-        #live-clock {
-            position: fixed;
-            bottom: 15px;
-            left: 15px;
-            background: rgba(44, 62, 80, 0.8);
-            color: white;
-            padding: 8px 15px;
-            border-radius: 10px;
-            font-size: 16px;
-            font-family: monospace;
-            z-index: 100;
-        }
+        #next-btn { margin-top: 25px; padding: 15px 60px; background: #9b59b6; color: white; border: none; border-radius: 50px; cursor: pointer; font-size: 22px; display: none; box-shadow: 0 5px 15px rgba(155, 89, 182, 0.4); }
+
+        /* 時鐘 */
+        #live-clock { position: fixed; bottom: 20px; left: 20px; background: #2c3e50; color: white; padding: 10px 20px; border-radius: 12px; font-size: 18px; font-family: 'Courier New', Courier, monospace; z-index: 100; box-shadow: 0 4px 8px rgba(0,0,0,0.2); }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
 <body>
 
     <div class="container">
         <h1>🔍 情緒小偵探</h1>
+        
         <div id="game-area">
-            <p class="question">這張臉是什麼感覺呢？</p>
-            <div class="image-placeholder">
-                <img id="q-image" src="" alt="表情圖片">
+            <div id="q-text" class="question-text">這張臉是什麼感覺呢？</div>
+            
+            <div class="image-container">
+                <img id="q-image" src="" alt="情緒圖片">
             </div>
-            <div class="options" id="options-bin"></div>
-            <div id="feedback"></div>
-            <button id="next-btn" onclick="nextQuestion()">點我下一題</button>
+
+            <div class="options-grid" id="options-bin"></div>
+
+            <div id="reflection-area">
+                <p class="reflection-text" id="ref-question"></p>
+                <p style="color: #666;">(老師可以請學生分享或口頭回答喔！)</p>
+            </div>
+
+            <button id="next-btn" onclick="nextQuestion()">下一題 ➔</button>
         </div>
     </div>
 
-    <div id="live-clock">載入時間中...</div>
+    <div id="live-clock">載入時間...</div>
 
     <script>
-        // 設定題目與對應 image 資料夾中的檔名
         const questions = [
-            { img: "image/happy.png", options: ["開心", "難過"], correct: 0 },
-            { img: "image/anger.png", options: ["害怕", "生氣"], correct: 1 },
-            { img: "image/sad.png", options: ["難過", "高興"], correct: 0 },
-            { img: "image/fear.png", options: ["害怕", "冷靜"], correct: 0 },
-            { img: "image/hate.png", options: ["討厭", "開心"], correct: 0 },
-            { img: "image/glad.png", options: ["難過", "高興"], correct: 1 },
-            { img: "image/chill.png", options: ["生氣", "冷靜"], correct: 1 }
+            { id: "happy", name: "開心", img: "image/happy.png", options: ["開心", "難過"], correct: 0 },
+            { id: "anger", name: "生氣", img: "image/anger.png", options: ["害怕", "生氣"], correct: 1 },
+            { id: "sad", name: "難過", img: "image/sad.png", options: ["難過", "高興"], correct: 0 },
+            { id: "fear", name: "害怕", img: "image/fear.png", options: ["害怕", "冷靜"], correct: 0 },
+            { id: "hate", name: "討厭", img: "image/hate.png", options: ["討厭", "開心"], correct: 0 },
+            { id: "glad", name: "高興", img: "image/glad.png", options: ["難過", "高興"], correct: 1 },
+            { id: "chill", name: "冷靜", img: "image/chill.png", options: ["生氣", "冷靜"], correct: 1 }
         ];
+
+        // 圖片預載機制：確保圖片出現不延遲
+        const preloadedImages = [];
+        function preload() {
+            questions.forEach(q => {
+                const img = new Image();
+                img.src = q.img;
+                preloadedImages.push(img);
+            });
+        }
+        preload();
 
         let currentIdx = 0;
 
         function loadQuestion() {
             const q = questions[currentIdx];
             document.getElementById('q-image').src = q.img;
+            document.getElementById('q-text').innerText = "這張臉是什麼感覺呢？";
+            document.getElementById('reflection-area').style.display = 'none';
+            document.getElementById('next-btn').style.display = 'none';
+            
             const bin = document.getElementById('options-bin');
             bin.innerHTML = '';
-            document.getElementById('feedback').innerText = '';
-            document.getElementById('next-btn').style.display = 'none';
+            bin.style.display = 'grid';
 
             q.options.forEach((opt, index) => {
                 const btn = document.createElement('button');
@@ -82,20 +105,27 @@
         }
 
         function checkAnswer(selected, correct, btn) {
-            const buttons = document.querySelectorAll('.options button');
-            buttons.forEach(b => b.disabled = true);
-
+            const q = questions[currentIdx];
+            const buttons = document.querySelectorAll('.options-grid button');
+            
             if (selected === correct) {
                 btn.classList.add('correct');
-                document.getElementById('feedback').innerText = "答對了！你觀察得真仔細";
-                document.getElementById('feedback').style.color = "#27ae60";
+                // 停用所有按鈕防止重複點擊
+                buttons.forEach(b => b.disabled = true);
+                
+                // 顯示反思問句
+                setTimeout(() => {
+                    document.getElementById('options-bin').style.display = 'none';
+                    document.getElementById('q-text').innerText = "太棒了！答對了！";
+                    document.getElementById('reflection-area').style.display = 'block';
+                    document.getElementById('ref-question').innerText = `想想看，你什麼時候也會有「${q.name}」的情緒呢？`;
+                    document.getElementById('next-btn').style.display = 'inline-block';
+                }, 500);
             } else {
                 btn.classList.add('wrong');
-                document.getElementById('feedback').innerText = "再看一次表情喔...";
-                document.getElementById('feedback').style.color = "#c0392b";
-                buttons[correct].classList.add('correct');
+                // 答錯了抖動一下，不強迫進入下一題，讓學生再選一次
+                setTimeout(() => btn.classList.remove('wrong'), 800);
             }
-            document.getElementById('next-btn').style.display = 'inline-block';
         }
 
         function nextQuestion() {
@@ -103,17 +133,17 @@
             if (currentIdx < questions.length) {
                 loadQuestion();
             } else {
-                document.getElementById('game-area').innerHTML = "<h2>太棒了！<br>你已經認識所有情緒了！</h2><button onclick='location.reload()'>再玩一次</button>";
+                document.getElementById('game-area').innerHTML = `
+                    <h2 style="font-size: 36px; color: #27ae60;">關卡完成！</h2>
+                    <p style="font-size: 24px;">你今天認識了好多心情喔！</p>
+                    <button onclick="location.reload()" style="background:#3498db; color:white; border:none; padding: 15px 40px;">再玩一次</button>
+                `;
             }
         }
 
-        // 更新時鐘功能
         function updateClock() {
             const now = new Date();
-            const timeStr = now.getHours().toString().padStart(2, '0') + ":" + 
-                            now.getMinutes().toString().padStart(2, '0') + ":" + 
-                            now.getSeconds().toString().padStart(2, '0');
-            document.getElementById('live-clock').innerText = "現在時間：" + timeStr;
+            document.getElementById('live-clock').innerText = "現在時間：" + now.toLocaleTimeString('zh-TW', { hour12: false });
         }
 
         setInterval(updateClock, 1000);
