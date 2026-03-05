@@ -24,10 +24,8 @@
             min-height: 100vh; 
             margin: 0; 
             padding: 20px; 
-            overflow-x: hidden;
         }
         
-        /* 寬版容器設計 */
         .container { 
             width: 100%; 
             max-width: 900px; 
@@ -36,114 +34,84 @@
             border-radius: 30px; 
             box-shadow: 0 15px 35px rgba(0,0,0,0.1); 
             text-align: center; 
-            transition: 0.3s;
         }
 
-        /* 首頁主選單樣式 */
+        /* 首頁樣式 */
         .emoji-header { font-size: 80px; margin-bottom: 20px; animation: bounce 2s infinite; }
         @keyframes bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-15px); } }
         
-        .menu-grid { 
-            display: grid; 
-            grid-template-columns: 1fr 1fr; 
-            gap: 25px; 
-            margin-top: 30px; 
-        }
-        
+        .menu-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 25px; margin-top: 30px; }
         .menu-card { 
             padding: 40px 20px; 
             border-radius: 20px; 
             border: 5px solid var(--primary); 
             cursor: pointer; 
-            transition: all 0.3s; 
+            transition: 0.3s; 
             background: white;
         }
         .menu-card:hover { transform: scale(1.05); background: #e3f2fd; }
-        .menu-card h2 { font-size: 28px; color: var(--primary); margin: 10px 0; }
-        .menu-card p { font-size: 18px; color: #666; }
+        .menu-card h2 { font-size: 28px; color: var(--primary); }
 
-        /* 遊戲畫面樣式 */
+        /* 遊戲區域樣式 */
         .game-screen { display: none; }
-        .question-text { 
-            font-size: 28px; 
-            color: #d35400; 
-            font-weight: bold; 
-            margin-bottom: 25px; 
-            min-height: 40px;
-        }
-        
+        .question-text { font-size: 28px; color: #d35400; font-weight: bold; margin-bottom: 25px; min-height: 40px; }
         .image-container { 
-            width: 380px; 
-            height: 380px; 
+            width: 350px; 
+            height: 350px; 
             margin: 0 auto 30px; 
             border: 8px solid var(--warning); 
             border-radius: 25px; 
             overflow: hidden; 
             background: #fff; 
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            display: flex; align-items: center; justify-content: center;
         }
         .image-container img { width: 100%; height: 100%; object-fit: cover; }
 
         /* 選項按鈕 */
-        .options-grid { 
-            display: grid; 
-            grid-template-columns: 1fr 1fr; 
-            gap: 20px; 
-            max-width: 700px; 
-            margin: 0 auto; 
-        }
-        .helper-mode .options-grid { grid-template-columns: 1fr; } /* 助人模式按鈕變寬 */
+        .options-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; max-width: 700px; margin: 0 auto; }
+        .helper-mode .options-grid { grid-template-columns: 1fr; } 
 
         button.btn { 
-            padding: 18px 25px; 
+            padding: 18px; 
             font-size: 24px; 
             cursor: pointer; 
             border: 3px solid var(--primary); 
             background: white; 
             border-radius: 15px; 
             font-weight: bold; 
-            transition: 0.2s; 
-            color: #2c3e50;
         }
-        button.btn:hover:not(:disabled) { background: #e3f2fd; }
-        .correct { background: var(--success) !important; color: white !important; border-color: #27ae60 !important; }
-        .wrong { background: var(--danger) !important; color: white !important; border-color: #c0392b !important; }
+        .correct { background: var(--success) !important; color: white !important; }
+        .wrong { background: var(--danger) !important; color: white !important; }
 
-        /* 答對後的反思/回饋區塊 */
-        .feedback-box { 
-            margin-top: 30px; 
-            padding: 25px; 
-            border-radius: 20px; 
-            display: none; 
-            background: #fff9db; 
-            border: 3px dashed var(--warning); 
-            animation: fadeIn 0.5s;
+        /* 抽籤卡片樣式 */
+        .card-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 15px; margin-top: 30px; }
+        .lucky-card {
+            height: 150px;
+            background: var(--secondary);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 40px;
+            font-weight: bold;
+            border-radius: 15px;
+            cursor: pointer;
+            transition: 0.3s;
+            border: 4px solid white;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
         }
-        .feedback-text { font-size: 26px; color: #856404; font-weight: bold; margin: 0; }
+        .lucky-card:hover { transform: translateY(-10px); background: #8e44ad; }
+        .lucky-card.revealed { background: #95a5a6; cursor: default; transform: none; }
+
+        .feedback-box { margin-top: 30px; padding: 25px; border-radius: 20px; display: none; background: #fff9db; border: 3px dashed var(--warning); animation: fadeIn 0.5s; }
+        .feedback-text { font-size: 26px; color: #856404; font-weight: bold; }
         
-        /* 導覽按鈕 */
         .nav-btns { margin-top: 40px; display: flex; justify-content: center; gap: 25px; }
-        .next-btn { padding: 15px 60px; background: var(--secondary); color: white; border: none; border-radius: 50px; cursor: pointer; font-size: 24px; display: none; box-shadow: 0 5px 15px rgba(155, 89, 182, 0.4); }
+        .next-btn { padding: 15px 60px; background: var(--secondary); color: white; border: none; border-radius: 50px; cursor: pointer; font-size: 24px; display: none; }
         .home-btn { padding: 10px 30px; background: #95a5a6; color: white; border: none; border-radius: 10px; cursor: pointer; font-size: 18px; }
 
-        /* 左下角時鐘 */
-        #live-clock { 
-            position: fixed; 
-            bottom: 20px; 
-            left: 20px; 
-            background: #2c3e50; 
-            color: white; 
-            padding: 12px 20px; 
-            border-radius: 15px; 
-            font-size: 20px; 
-            font-family: 'Courier New', monospace; 
-            z-index: 100;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
-        }
-
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        #live-clock { position: fixed; bottom: 20px; left: 20px; background: #2c3e50; color: white; padding: 12px 20px; border-radius: 15px; font-size: 20px; font-family: monospace; z-index: 100; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
     </style>
 </head>
 <body>
@@ -151,31 +119,38 @@
     <div id="main-menu" class="container">
         <div class="emoji-header">🕵️‍♂️🤝✨</div>
         <h1>社會技巧實驗室</h1>
-        <p style="font-size: 24px; color: #7f8c8d;">嗨！小偵探，今天想要挑戰哪一個任務呢？</p>
         <div class="menu-grid">
             <div class="menu-card" onclick="startGame('emotion')">
                 <span style="font-size: 50px;">🔍</span>
                 <h2>情緒小偵探</h2>
-                <p>觀察表情，猜猜看他們的心情</p>
             </div>
             <div class="menu-card" onclick="startGame('helper')">
                 <span style="font-size: 50px;">🤝</span>
                 <h2>小小助人高手</h2>
-                <p>練習在學校裡幫助好朋友</p>
             </div>
         </div>
     </div>
 
     <div id="game-container" class="container game-screen">
         <div id="q-text" class="question-text"></div>
-        <div class="image-container">
-            <img id="display-img" src="" alt="教學圖片">
+        
+        <div id="card-selection" class="card-grid" style="display: none;">
+            <div class="lucky-card" onclick="revealScenario(0)">1</div>
+            <div class="lucky-card" onclick="revealScenario(1)">2</div>
+            <div class="lucky-card" onclick="revealScenario(2)">3</div>
+            <div class="lucky-card" onclick="revealScenario(3)">4</div>
+            <div class="lucky-card" onclick="revealScenario(4)">5</div>
         </div>
-        <div id="options-bin" class="options-grid"></div>
+
+        <div id="result-display">
+            <div class="image-container">
+                <img id="display-img" src="" alt="圖片">
+            </div>
+            <div id="options-bin" class="options-grid"></div>
+        </div>
         
         <div id="feedback-area" class="feedback-box">
             <p class="feedback-text" id="feedback-msg"></p>
-            <p style="color: #7f8c8d; font-size: 20px; margin-top: 15px;">(請小朋友舉手和老師分享喔！)</p>
         </div>
 
         <div class="nav-btns">
@@ -187,82 +162,48 @@
     <div id="live-clock">載入時間...</div>
 
     <script>
-        // 資料設定區
         const emotionData = [
-            { id: "happy", name: "開心", img: "image/happy.png", options: ["開心", "難過"], correct: 0, ref: "什麼時候你也會感覺「開心」呢？" },
-            { id: "anger", name: "生氣", img: "image/anger.png", options: ["害怕", "生氣"], correct: 1, ref: "當你感覺「生氣」時，你會怎麼讓自己冷靜？" },
-            { id: "sad", name: "難過", img: "image/sad.png", options: ["難過", "高興"], correct: 0, ref: "當你「難過」時，你最希望別人為你做什麼？" },
-            { id: "fear", name: "害怕", img: "image/fear.png", options: ["害怕", "冷靜"], correct: 0, ref: "什麼事情會讓你覺得「害怕」？" },
-            { id: "hate", name: "討厭", img: "image/hate.png", options: ["討厭", "開心"], correct: 0, ref: "當你有「討厭」的感覺，你會怎麼告訴老師？" },
-            { id: "glad", name: "高興", img: "image/glad.png", options: ["難過", "高興"], correct: 1, ref: "今天有發生讓你「高興」的事嗎？" },
-            { id: "chill", name: "冷靜", img: "image/chill.png", options: ["生氣", "冷靜"], correct: 1, ref: "抱抱自己或深呼吸，可以讓你感到「冷靜」嗎？" }
+            { name: "開心", img: "image/happy.png", options: ["開心", "難過"], correct: 0, ref: "什麼時候你也會感覺「開心」呢？" },
+            { name: "生氣", img: "image/anger.png", options: ["害怕", "生氣"], correct: 1, ref: "生氣時，你會怎麼讓自己冷靜？" },
+            { name: "難過", img: "image/sad.png", options: ["難過", "高興"], correct: 0, ref: "難過時，你希望別人對你說什麼？" },
+            { name: "害怕", img: "image/fear.png", options: ["害怕", "冷靜"], correct: 0, ref: "什麼事情會讓你覺得「害怕」？" },
+            { name: "討厭", img: "image/hate.png", options: ["討厭", "開心"], correct: 0, ref: "「討厭」時，你會怎麼告訴老師？" },
+            { name: "高興", img: "image/glad.png", options: ["難過", "高興"], correct: 1, ref: "今天有發生讓你「高興」的事嗎？" },
+            { name: "冷靜", img: "image/chill.png", options: ["生氣", "冷靜"], correct: 1, ref: "深呼吸可以讓你感到「冷靜」嗎？" }
         ];
 
         const helperData = [
-            { 
-                scenario: "情境一：她在跑步時跌倒了，看起來很痛...",
-                img: "image/sad.png", 
-                options: ["拿一張衛生紙給她", "笑她是愛哭鬼", "趕快去請老師來幫忙"],
-                correct: [0, 2],
-                feedback: "給予關懷或尋求老師幫助，都是最棒的助人行為！"
-            },
-            { 
-                scenario: "情境二：她找不到畫筆，急得快要哭出來了...",
-                img: "image/fear.png", 
-                options: ["溫柔問她：需要幫忙嗎？", "不理她，自己繼續畫", "陪著她一起找找看"],
-                correct: [0, 2],
-                feedback: "主動詢問與陪伴，能讓對方感覺不再害怕。"
-            },
-            { 
-                scenario: "情境三：她一個人坐在位子上看大家玩，看起來很寂寞...",
-                img: "image/sad.png", 
-                options: ["主動邀請：要不要一起玩？", "當作沒看到，自己玩", "跟老師說，請老師找他一起玩"],
-                correct: [0, 2],
-                feedback: "溫暖的邀請或請老師幫忙，能讓同學感到不孤單。"
-            },
-            { 
-                scenario: "情境四：小明不小心把彩色筆掉在地上，亂七八糟的...",
-                img: "image/fear.png", 
-                options: ["幫他一起撿起來", "笑他笨手笨腳、很粗心", "去拿工具或請老師來協助"],
-                correct: [0, 2],
-                feedback: "伸出援手或找人協助，才是解決問題的好方法喔！"
-            },
-            { 
-                scenario: "情境五：她想玩積木，但積木都被同學拿走了，大雄很難過...",
-                img: "image/sad.png", 
-                options: ["跟他說：我們一起輪流玩好嗎？", "直接從對方手裡把積木搶過來", "請老師幫忙協調"],
-                correct: [0, 2],
-                feedback: "練習詢問輪流或請老師幫忙，大家都能玩得開心！"
-            }
+            { scenario: "情境一：小美在跑步時跌倒了，看起來很痛...", img: "image/sad.png", options: ["拿衛生紙給她", "笑她是愛哭鬼", "請老師來幫忙"], correct: [0, 2], feedback: "給予關懷或尋求老師幫助，都是最棒的！" },
+            { scenario: "情境二：小美找不到畫筆，急得快要哭出來了...", img: "image/fear.png", options: ["問她：需要幫忙嗎？", "不理她繼續畫", "陪著她一起找"], correct: [0, 2], feedback: "主動詢問與陪伴，能讓對方感覺不再害怕。" },
+            { scenario: "情境三：小華一個人坐在位子上，看起來很寂寞...", img: "image/sad.png", options: ["主動邀請：要不要一起玩？", "當作沒看到", "請老師找他玩"], correct: [0, 2], feedback: "溫暖的邀請或請老師幫忙，能讓同學不孤單。" },
+            { scenario: "情境四：小明不小心把彩色筆掉在地上，亂七八糟的...", img: "image/fear.png", options: ["幫他一起撿起來", "笑他笨手笨腳", "去請老師來協助"], correct: [0, 2], feedback: "伸出援手或找人協助，才是解決問題的好方法！" },
+            { scenario: "情境五：大雄想玩積木，但積木都被同學拿走了...", img: "image/sad.png", options: ["跟他說：我們輪流玩好嗎？", "直接搶過來", "請老師幫忙協調"], correct: [0, 2], feedback: "練習詢問輪流或請老師幫忙，大家都開心！" }
         ];
 
         let currentMode = '';
         let currentIdx = 0;
+        let isPracticeMode = false;
 
-        // 啟動遊戲
         function startGame(mode) {
             currentMode = mode;
             currentIdx = 0;
+            isPracticeMode = false;
             document.getElementById('main-menu').style.display = 'none';
-            const container = document.getElementById('game-container');
-            container.style.display = 'block';
+            document.getElementById('game-container').style.display = 'block';
+            document.getElementById('card-selection').style.display = 'none';
+            document.getElementById('result-display').style.display = 'block';
             
-            // 針對助人模式調整按鈕寬度
-            if (mode === 'helper') {
-                container.classList.add('helper-mode');
-            } else {
-                container.classList.remove('helper-mode');
-            }
+            const container = document.getElementById('game-container');
+            if (mode === 'helper') container.classList.add('helper-mode');
+            else container.classList.remove('helper-mode');
             
             loadContent();
         }
 
-        // 載入內容
         function loadContent() {
             const feedback = document.getElementById('feedback-area');
             const nextBtn = document.getElementById('next-btn');
             const bin = document.getElementById('options-bin');
-            
             feedback.style.display = 'none';
             nextBtn.style.display = 'none';
             bin.style.display = 'grid';
@@ -272,17 +213,12 @@
                 const q = emotionData[currentIdx];
                 document.getElementById('q-text').innerText = "這張臉是什麼感覺呢？";
                 document.getElementById('display-img').src = q.img;
-                q.options.forEach((opt, idx) => {
-                    createButton(opt, idx === q.correct);
-                });
+                q.options.forEach((opt, idx) => createButton(opt, idx === q.correct));
             } else {
                 const m = helperData[currentIdx];
                 document.getElementById('q-text').innerText = m.scenario;
                 document.getElementById('display-img').src = m.img;
-                m.options.forEach((opt, idx) => {
-                    const isCorrect = m.correct.includes(idx);
-                    createButton(opt, isCorrect);
-                });
+                m.options.forEach((opt, idx) => createButton(opt, m.correct.includes(idx)));
             }
         }
 
@@ -297,17 +233,11 @@
         function handleChoice(isCorrect, btn) {
             if (isCorrect) {
                 btn.classList.add('correct');
-                const buttons = document.querySelectorAll('.btn');
-                buttons.forEach(b => b.disabled = true);
-                
+                document.querySelectorAll('.btn').forEach(b => b.disabled = true);
                 setTimeout(() => {
                     document.getElementById('options-bin').style.display = 'none';
                     document.getElementById('feedback-area').style.display = 'block';
-                    
-                    const msg = (currentMode === 'emotion') 
-                        ? emotionData[currentIdx].ref 
-                        : helperData[currentIdx].feedback;
-                    
+                    const msg = (currentMode === 'emotion') ? emotionData[currentIdx].ref : helperData[currentIdx].feedback;
                     document.getElementById('feedback-msg').innerText = msg;
                     document.getElementById('next-btn').style.display = 'inline-block';
                 }, 600);
@@ -322,10 +252,52 @@
             const max = (currentMode === 'emotion') ? emotionData.length : helperData.length;
             if (currentIdx < max) {
                 loadContent();
+            } else if (currentMode === 'helper' && !isPracticeMode) {
+                // 進入抽籤練習模式
+                startPractice();
             } else {
-                alert("🎉 太棒了！任務全部完成！");
+                alert("🎉 任務全部完成！");
                 goHome();
             }
+        }
+
+        function startPractice() {
+            isPracticeMode = true;
+            document.getElementById('q-text').innerText = "🌟 抽籤大挑戰：請選一張卡片上台演演看！";
+            document.getElementById('result-display').style.display = 'none';
+            document.getElementById('feedback-area').style.display = 'none';
+            document.getElementById('next-btn').style.display = 'none';
+            document.getElementById('card-selection').style.display = 'grid';
+            
+            // 重設卡片狀態
+            document.querySelectorAll('.lucky-card').forEach(c => c.classList.remove('revealed'));
+        }
+
+        function revealScenario(idx) {
+            const cards = document.querySelectorAll('.lucky-card');
+            if (cards[idx].classList.contains('revealed')) return;
+            
+            cards[idx].classList.add('revealed');
+            const m = helperData[idx];
+            
+            document.getElementById('card-selection').style.display = 'none';
+            document.getElementById('result-display').style.display = 'block';
+            document.getElementById('q-text').innerText = "【上台練習任務】" + m.scenario;
+            document.getElementById('display-img').src = m.img;
+            document.getElementById('options-bin').style.display = 'none';
+            
+            document.getElementById('feedback-area').style.display = 'block';
+            document.getElementById('feedback-msg').innerText = "請兩位小朋友上台演演看這個情境喔！";
+            
+            // 讓「回選單」或「再抽一次」按鈕出現
+            const nextBtn = document.getElementById('next-btn');
+            nextBtn.innerText = "完成練習 ➔";
+            nextBtn.style.display = 'inline-block';
+            nextBtn.onclick = () => {
+                nextBtn.innerText = "下一題 ➔"; // 還原文字
+                nextBtn.onclick = nextStep; // 還原功能
+                startPractice(); // 回到抽卡畫面
+            };
         }
 
         function goHome() {
@@ -333,26 +305,12 @@
             document.getElementById('game-container').style.display = 'none';
         }
 
-        // 即時時鐘
         function updateClock() {
             const now = new Date();
-            const hours = now.getHours().toString().padStart(2, '0');
-            const mins = now.getMinutes().toString().padStart(2, '0');
-            const secs = now.getSeconds().toString().padStart(2, '0');
-            document.getElementById('live-clock').innerText = `現在時間：${hours}:${mins}:${secs}`;
+            document.getElementById('live-clock').innerText = "現在時間：" + now.toLocaleTimeString('zh-TW', { hour12: false });
         }
         setInterval(updateClock, 1000);
         updateClock();
-
-        // 預載圖片機制
-        function preloadImages() {
-            const allImgs = [...new Set([...emotionData.map(d=>d.img), ...helperData.map(d=>d.img)])];
-            allImgs.forEach(src => {
-                const img = new Image();
-                img.src = src;
-            });
-        }
-        preloadImages();
     </script>
 </body>
 </html>
