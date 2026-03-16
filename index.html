@@ -4,17 +4,18 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>社會技巧：選擇大挑戰 (可愛大字版)</title>
-    <!-- 引入圓潤的 Google Fonts -->
+    <!-- 引入圓潤字體 -->
     <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@700&display=swap" rel="stylesheet">
     <style>
         :root { 
             --primary: #54a0ff; 
             --secondary: #a29bfe; 
-            --success: #26de81; /* 調整為較柔和的綠色 */
+            --success: #26de81; 
             --warning: #ffeaa7; 
             --danger: #ff7675; 
             --bg: #fffcf0;
             --text: #2d3436;
+            --instruction-color: #ff9f43; /* 參考圖片的橘色 */
         }
 
         html, body { 
@@ -22,7 +23,6 @@
             margin: 0; 
             padding: 0; 
             overflow: hidden; 
-            /* 使用圓潤字體族群 */
             font-family: 'Quicksand', 'PingFang TC', 'Heiti TC', 'Microsoft JhengHei', sans-serif;
             background-color: var(--bg);
         }
@@ -33,9 +33,9 @@
             width: 98vw; 
             height: 98vh; 
             background: white; 
-            padding: 30px; 
-            border-radius: 60px; /* 超圓潤角 */
-            box-shadow: 0 20px 0px rgba(0,0,0,0.05); /* 扁平化可愛陰影 */
+            padding: 20px; 
+            border-radius: 60px; 
+            box-shadow: 0 20px 0px rgba(0,0,0,0.05); 
             text-align: center; 
             display: flex;
             flex-direction: column;
@@ -44,29 +44,31 @@
             border: 10px solid #f1f2f6;
         }
 
-        /* 可愛標題樣式 */
+        /* 標題與導引文字樣式 */
         h1 { 
-            font-size: 4rem; 
-            margin: 10px 0; 
+            font-size: 4.5rem; 
+            margin: 5px 0; 
             color: var(--primary); 
             font-weight: 900;
             text-shadow: 4px 4px 0px #dff9fb;
             letter-spacing: 5px;
         }
         
+        /* 參考圖片修改為暖橘色導引文字 */
         .instruction { 
-            font-size: 3rem; 
-            color: #ff9f43; 
+            font-size: 3.5rem; 
+            color: var(--instruction-color); 
             font-weight: bold; 
-            margin-bottom: 10px;
+            margin-bottom: 5px;
             text-shadow: 2px 2px 0px #fff;
+            filter: drop-shadow(2px 2px 2px rgba(0,0,0,0.1));
         }
 
-        /* 內容顯示區 */
+        /* 圖片容器：極大化 */
         .content-viewer { 
             flex: 1; 
             min-height: 0; 
-            margin: 15px auto; 
+            margin: 10px auto; 
             border: 10px solid var(--warning); 
             border-radius: 50px; 
             overflow: hidden; 
@@ -74,90 +76,80 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            width: 95%;
+            width: 98%; /* 圖片容器更寬 */
             position: relative;
             box-shadow: inset 0 5px 15px rgba(0,0,0,0.05);
         }
         .content-viewer img { 
-            max-width: 100%; 
-            max-height: 100%; 
-            object-fit: contain; 
+            width: 100%;
+            height: 100%;
+            object-fit: contain; /* 保持比例但盡量撐大 */
         }
 
-        /* 互動加分格：可愛卡片感 */
+        /* 互動加分格 */
         #score-grid {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
-            gap: 25px;
-            width: 95%;
-            padding: 20px;
+            gap: 20px;
+            width: 98%;
+            padding: 10px;
         }
         .student-card {
             background: #f1f2f6;
             border: 5px solid var(--primary);
             border-radius: 40px;
-            padding: 20px;
+            padding: 15px;
             display: flex;
             flex-direction: column;
             align-items: center;
-            transition: transform 0.2s;
         }
         .student-name { font-size: 2.5rem; font-weight: bold; color: var(--text); margin-bottom: 5px; }
         .student-score { 
-            font-size: 4rem; 
+            font-size: 4.5rem; 
             font-weight: 900; 
             color: var(--danger); 
             margin-bottom: 10px;
-            font-family: 'Quicksand', sans-serif;
         }
         .add-btn {
             width: 100%;
-            padding: 15px;
-            font-size: 2rem;
+            padding: 10px;
+            font-size: 2.2rem;
             background: var(--success);
             color: white;
             border: none;
             border-radius: 30px;
             cursor: pointer;
             font-weight: bold;
-            box-shadow: 0 8px 0px #21b677; /* 調整陰影顏色 */
+            box-shadow: 0 8px 0px #21b677;
             transition: all 0.1s;
         }
-        .add-btn:active {
-            transform: translateY(4px);
-            box-shadow: 0 4px 0px #21b677;
-        }
+        .add-btn:active { transform: translateY(4px); box-shadow: 0 4px 0px #21b677; }
 
-        /* 選項按鈕：大泡泡 */
+        /* 選項按鈕 */
         .choices-grid { 
             display: grid; 
             grid-template-columns: 1fr 1fr; 
-            gap: 40px; 
+            gap: 30px; 
             width: 100%;
-            max-width: 1100px; 
-            margin: 15px auto; 
+            max-width: 1200px; 
+            margin: 10px auto; 
         }
         button.choice-btn { 
-            padding: 35px; 
+            padding: 25px; 
             font-size: 2.5rem; 
             cursor: pointer; 
             border: 8px solid var(--primary); 
             background: white; 
             border-radius: 50px; 
             font-weight: bold; 
-            transition: 0.3s;
             box-shadow: 0 10px 0px #dff9fb;
-        }
-        button.choice-btn:hover {
-            background: #f1f2f6;
-            transform: scale(1.02);
         }
 
         /* 導覽按鈕 */
-        .nav-grid { display: flex; justify-content: space-between; align-items: center; width: 100%; margin-top: 15px; }
+        .nav-grid { display: flex; justify-content: space-between; align-items: center; width: 100%; margin-top: 10px; }
         .nav-btn { 
-            padding: 20px 60px; 
-            font-size: 2.2rem; 
+            padding: 15px 60px; 
+            font-size: 2.5rem; 
             cursor: pointer; 
             border-radius: 80px; 
             border: none; 
@@ -166,18 +158,8 @@
             font-weight: bold;
             box-shadow: 0 8px 0px #2980b9;
         }
-        .nav-btn:active { transform: translateY(4px); box-shadow: 0 4px 0px #2980b9; }
         
-        .home-btn { 
-            padding: 15px 45px; 
-            background: #dfe6e9; 
-            color: #636e72; 
-            border: none; 
-            border-radius: 25px; 
-            cursor: pointer; 
-            font-size: 2rem; 
-            font-weight: bold; 
-        }
+        .home-btn { padding: 12px 40px; background: #dfe6e9; color: #636e72; border: none; border-radius: 25px; cursor: pointer; font-size: 2rem; font-weight: bold; }
 
         /* 回饋遮罩 */
         .feedback-overlay {
@@ -250,7 +232,7 @@
             <button id="opt-b" class="choice-btn" style="border-color: #54a0ff; color:#54a0ff;" onclick="makeChoice(1)"></button>
         </div>
 
-        <div class="nav-btns">
+        <div class="nav-btns" style="position: absolute; top: 30px; right: 30px;">
             <button class="home-btn" onclick="goHome()">🏠 回主選單</button>
         </div>
     </div>
@@ -262,6 +244,7 @@
         let studentScores = {};
         students.forEach(s => studentScores[s] = 0);
 
+        // 幻燈片結構
         let slides = [];
         for (let i = 1; i <= 16; i++) {
             slides.push({ type: 'image', src: `images/${i}.jpg` });
@@ -299,7 +282,8 @@
             document.getElementById('game-area').style.display = 'flex';
             
             if(mode === 'book') {
-                document.getElementById('mode-title').innerText = "📖 繪本故事時間";
+                document.getElementById('mode-title').innerText = "📘 繪本故事時間";
+                document.getElementById('mode-title').style.color = "#54a0ff";
                 document.getElementById('book-nav').style.display = 'flex';
                 document.getElementById('challenge-options').style.display = 'none';
                 slideIdx = 0;
@@ -353,11 +337,11 @@
 
         function addPoint(name) {
             studentScores[name]++;
-            document.getElementById(`score-${name}`).innerText = studentScores[name];
-            const el = document.getElementById(`score-${name}`);
-            el.animate([
+            const scoreEl = document.getElementById(`score-${name}`);
+            scoreEl.innerText = studentScores[name];
+            scoreEl.animate([
                 { transform: 'scale(1)' },
-                { transform: 'scale(1.5)', color: '#ff7675' },
+                { transform: 'scale(1.4)', color: '#ff7675' },
                 { transform: 'scale(1)' }
             ], { duration: 300 });
         }
@@ -392,7 +376,7 @@
             if(challengeIdx < challengeData.length) {
                 updateChallenge();
             } else {
-                alert("🎉 太棒了！任務挑戰成功！");
+                alert("🎉 任務挑戰成功！");
                 goHome();
             }
         }
